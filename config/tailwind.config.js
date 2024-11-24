@@ -5,13 +5,17 @@ module.exports = {
     './public/*.html',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
-    './app/frontend/components/**/*.js',
+    './app/frontend/components/**/*.vue',
     './app/views/**/*.{erb,haml,html,slim}'
   ],
   theme: {
     extend: {
+      colors: {
+        'brand-primary': '#3B82F6',
+        'brand-secondary': '#2563EB'
+      },
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+        sans: ['Inter var', 'ui-sans-serif', 'system-ui']
       }
     }
   },
