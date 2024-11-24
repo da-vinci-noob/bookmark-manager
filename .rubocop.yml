@@ -1,0 +1,510 @@
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+
+require:
+  - rubocop-packaging
+  - rubocop-performance
+  - rubocop-rails
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  # RuboCop has a bunch of cops enabled by default. This setting tells RuboCop
+  # to ignore them, so only the ones explicitly set in this file are enabled.
+  # Changed to default to true All default cop will be enabled
+  DisabledByDefault: false
+  SuggestExtensions: true
+  Exclude:
+    - '**/db/**/*'
+    - '**/tmp/**/*'
+    - '**/templates/**/*'
+    - '**/vendor/**/*'
+    - 'actionpack/lib/action_dispatch/journey/parser.rb'
+    - 'actionmailbox/test/dummy/**/*'
+    - 'actiontext/test/dummy/**/*'
+    - '**/node_modules/**/*'
+    - 'config/**/*'
+    - 'bin/**/*'
+
+### Exclude/Includes start
+
+Performance:
+  Exclude:
+    - '**/test/**/*'
+
+# Prefer assert_not over assert !
+Rails/AssertNot:
+  Include:
+    - '**/test/**/*'
+
+# Prefer assert_not_x over refute_x
+Rails/RefuteMethods:
+  Include:
+    - '**/test/**/*'
+
+### Exclude/Includes End
+
+Bundler/OrderedGems:
+  Enabled: false
+
+### Layout Cops Start
+
+Layout/ClassStructure:
+  Enabled: true
+  Categories:
+    module_inclusion:
+      - include
+      - prepend
+      - extend
+    attributes:
+      - attribute
+      - attr_reader
+      - attr_writer
+      - attr_accessor
+    associations:
+      - has_one
+      - has_many
+      - belongs_to
+      - has_and_belongs_to_many
+    validations:
+      - validate
+      - validates_presence_of
+      - validates_uniqueness_of
+    hooks:
+      - after_save
+      - after_create
+      - after_initialize
+  ExpectedOrder:
+    - module_inclusion
+    - constants
+    - attributes
+    - associations
+    - validations
+    - hooks
+    - public_class_methods
+    - initializer
+    - public_methods
+    - protected_methods
+    - private_methods
+
+Layout/ClosingHeredocIndentation:
+  Enabled: true
+
+# Align comments with method definitions.
+Layout/CommentIndentation:
+  Enabled: true
+
+Layout/ElseAlignment:
+  Enabled: true
+
+# Align `end` with the matching keyword or starting expression except for
+# assignments, where it should be aligned with the LHS.
+Layout/EndAlignment:
+  Enabled: true
+  EnforcedStyleAlignWith: variable
+  AutoCorrect: true
+
+Layout/EmptyComment:
+  AllowBorderComment: true
+  AllowMarginComment: true
+
+Layout/EmptyLineAfterMagicComment:
+  Enabled: true
+
+Layout/EmptyLineAfterMultilineCondition:
+  Enabled: true
+
+Layout/EmptyLinesAroundAccessModifier:
+  Enabled: true
+  EnforcedStyle: around
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: true
+
+# In a regular class definition, no empty lines around the body.
+Layout/EmptyLinesAroundClassBody:
+  Enabled: true
+
+# In a regular method definition, no empty lines around the body.
+Layout/EmptyLinesAroundMethodBody:
+  Enabled: true
+
+# In a regular module definition, no empty lines around the body.
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: true
+
+Layout/FirstArgumentIndentation:
+  Enabled: true
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: false
+
+Layout/FirstHashElementIndentation:
+  Enabled: true
+  EnforcedStyle: consistent
+
+# This cop checks for a line break before the first argument in a multi-line method call.
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
+
+# This cop checks for a line break before the first parameter in a multi-line method parameter definition.
+Layout/FirstMethodParameterLineBreak:
+  Enabled: true
+
+Layout/HashAlignment:
+  Enabled: true
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+  EnforcedLastArgumentHashStyle: always_inspect
+
+# Method definitions after `private` or `protected` isolated calls need one
+# extra level of indentation.
+Layout/IndentationConsistency:
+  Enabled: true
+  EnforcedStyle: indented_internal_methods
+
+# Detect hard tabs, no hard tabs.
+Layout/IndentationStyle:
+  Enabled: true
+  EnforcedStyle: spaces
+  IndentationWidth: 2
+
+# Two spaces, no tabs (for indentation).
+Layout/IndentationWidth:
+  Enabled: false
+
+Layout/LeadingCommentSpace:
+  Enabled: true
+
+Layout/LineLength:
+  Max: 150
+
+Layout/RedundantLineBreak:
+  Enabled: true
+  InspectBlocks: false
+
+# if method calls are chained onto single line blocks. It considers that a line break before the dot improves the readability of the code.
+Layout/SingleLineBlockChain:
+  Enabled: true
+
+Layout/SpaceAfterColon:
+  Enabled: true
+
+Layout/SpaceAfterComma:
+  Enabled: true
+
+Layout/SpaceAfterSemicolon:
+  Enabled: true
+
+Layout/SpaceAroundEqualsInParameterDefault:
+  Enabled: true
+  EnforcedStyle: space
+
+Layout/SpaceAroundKeyword:
+  Enabled: true
+
+Layout/SpaceAroundOperators:
+  Enabled: true
+
+# Use `foo {}` not `foo{}`.
+Layout/SpaceBeforeBlockBraces:
+  Enabled: true
+
+Layout/SpaceBeforeBrackets:
+  Enabled: true
+
+Layout/SpaceBeforeComma:
+  Enabled: true
+
+Layout/SpaceBeforeComment:
+  Enabled: true
+
+Layout/SpaceBeforeFirstArg:
+  Enabled: true
+
+# use %i(foo bar baz) not %w(foo  bar  baz)
+Layout/SpaceInsideArrayPercentLiteral:
+  Enabled: true
+
+# Use `foo { bar }` not `foo {bar}`.
+Layout/SpaceInsideBlockBraces:
+  Enabled: true
+  EnforcedStyle: space
+  EnforcedStyleForEmptyBraces: no_space
+  SpaceBeforeBlockParameters: true
+
+# Use `{ a: 1 }` not `{a:1}`.
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: true
+
+Layout/SpaceInsideParens:
+  Enabled: true
+
+# Empty lines should not have any spaces.
+Layout/TrailingEmptyLines:
+  Enabled: true
+
+# No trailing whitespace.
+Layout/TrailingWhitespace:
+  Enabled: true
+
+# Align `when` with `case`.
+Layout/CaseIndentation:
+  Enabled: true
+
+# Layout Cops End
+
+# Lint Cops Start
+Lint/AmbiguousOperator:
+  Enabled: true
+
+Lint/AmbiguousRegexpLiteral:
+  Enabled: true
+
+Lint/DeprecatedClassMethods:
+  Enabled: true
+
+Lint/DuplicateRequire:
+  Enabled: true
+
+Lint/ErbNewArguments:
+  Enabled: true
+
+# Use my_method(my_arg) not my_method( my_arg ) or my_method my_arg.
+Lint/RequireParentheses:
+  Enabled: true
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: true
+
+Lint/RedundantStringCoercion:
+  Enabled: true
+
+Lint/UriEscapeUnescape:
+  Enabled: true
+
+Lint/UselessAssignment:
+  Enabled: true
+  AutoCorrect: false
+
+### Lint Cops End
+
+### Metrics Cops start
+
+Metrics/MethodLength:
+  Enabled: true
+  Max: 25
+
+### Metrics Cops End
+
+### Performance Cops start
+
+Performance/CaseWhenSplat:
+  Enabled: true
+
+Performance/ChainArrayAllocation:
+  Enabled: true
+
+Performance/FlatMap:
+  Enabled: true
+
+Performance/IoReadlines:
+  Enabled: true
+
+Performance/RedundantMerge:
+  Enabled: true
+
+Performance/StartWith:
+  Enabled: true
+
+Performance/EndWith:
+  Enabled: true
+
+Performance/RegexpMatch:
+  Enabled: true
+
+Performance/ReverseEach:
+  Enabled: true
+
+Performance/SelectMap:
+  Enabled: true
+
+Performance/UnfreezeString:
+  Enabled: true
+
+Performance/DeletePrefix:
+  Enabled: true
+
+Performance/DeleteSuffix:
+  Enabled: true
+
+### Performance Cops End
+
+### Rails Cops Starts
+
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: true
+
+Rails/ExpandedDateRange:
+  Enabled: true
+
+Rails/FindById:
+  Enabled: true
+
+Rails/MailerName:
+  Enabled: true
+
+Rails/NegateInclude:
+  Enabled: true
+
+Rails/OrderById:
+  Enabled: true
+
+Rails/PluckId:
+  Enabled: true
+
+Rails/RenderPlainText:
+  Enabled: true
+
+Rails/WhereEquals:
+  Enabled: true
+
+Rails/WhereExists:
+  Enabled: true
+
+Rails/WhereNot:
+  Enabled: true
+
+Rails/IndexBy:
+  Enabled: true
+
+Rails/IndexWith:
+  Enabled: true
+
+### Rails Cops End
+
+### Styles Cops Start
+
+# Prefer &&/|| over and/or.
+Style/AndOr:
+  Enabled: true
+
+Style/AutoResourceCleanup:
+  Enabled: true
+
+Style/CollectionCompact:
+  Enabled: true
+
+# Prefer Foo.method over Foo::method
+Style/ColonMethodCall:
+  Enabled: true
+
+Style/DefWithParentheses:
+  Enabled: true
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+  SafeAutoCorrect: true
+  Exclude:
+    - 'actionview/test/**/*.builder'
+    - 'actionview/test/**/*.ruby'
+    - 'actionpack/test/**/*.builder'
+    - 'actionpack/test/**/*.ruby'
+    - 'activestorage/db/migrate/**/*.rb'
+    - 'activestorage/db/update_migrate/**/*.rb'
+    - 'actionmailbox/db/migrate/**/*.rb'
+    - 'actiontext/db/migrate/**/*.rb'
+    - 'Gemfile'
+
+Style/ImplicitRuntimeError:
+  Enabled: true
+
+Style/HashExcept:
+  Enabled: true
+
+# Use Ruby >= 1.9 syntax for hashes. Prefer { a: :b } over { :a => :b }.
+Style/HashSyntax:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/IfWithBooleanLiteralBranches:
+  Enabled: true
+
+Style/IpAddresses:
+  Enabled: true
+
+# Defining a method with parameters needs parentheses.
+Style/MethodDefParentheses:
+  Enabled: true
+
+Style/NegatedIfElseCondition:
+  Enabled: true
+
+Style/NilLambda:
+  Enabled: true
+
+Style/ParenthesesAroundCondition:
+  Enabled: true
+
+Style/RedundantArgument:
+  Enabled: true
+
+Style/RedundantBegin:
+  Enabled: true
+
+Style/RedundantFreeze:
+  Enabled: true
+
+# Use quotes for string literals when they are enough.
+Style/RedundantPercentQ:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/RedundantReturn:
+  Enabled: true
+  AllowMultipleReturnValues: true
+
+Style/ReturnNil:
+  Enabled: true
+  EnforcedStyle: return
+
+Style/Semicolon:
+  Enabled: true
+  AllowAsExpressionSeparator: true
+
+# use quuz.public_send(:fred) not quuz.send(:fred)
+Style/Send:
+  Enabled: true
+
+# use { one: 1 } instead { 'one' => 1 }
+Style/StringHashKeys:
+  Enabled: true
+
+# Check quotes usage according to lint rule below.
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
+Style/StringChars:
+  Enabled: true
+
+Style/SwapValues:
+  Enabled: true
+
+Style/TrivialAccessors:
+  Enabled: true
+### Styles End
