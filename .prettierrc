@@ -1,0 +1,58 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "useTabs": false,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "printWidth": 120,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "parser": "html",
+  "BracketSameLine": true,
+  "overrides": [
+    {
+      "files": "*.rb",
+      "options": {
+        "parser": "ruby",
+        "plugins": ["./node_modules/@prettier/plugin-ruby"]
+      }
+    },
+    {
+      "files": "*.prettierrc",
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": "*.js",
+      "options": {
+        "parser": "babel"
+      }
+    },
+    {
+      "files": "*.ts",
+      "options": {
+        "parser": "babel"
+      }
+    },
+    {
+      "files": "*.vue",
+      "options": {
+        "vueIndentScriptAndStyle": false,
+        "parser": "vue"
+      }
+    },
+    {
+      "files": "*.yml",
+      "options": {
+        "parser": "yaml"
+      }
+    }
+  ]
+}
