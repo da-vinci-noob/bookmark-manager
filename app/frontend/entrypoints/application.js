@@ -29,6 +29,13 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 
 import { createApp } from 'vue'
 import Home from '../components/views/Home.vue'
+import Bookmarks from '../components/views/Bookmarks.vue'
+
+const bookmarksElement = document.querySelector('#bookmarks')
+if (bookmarksElement) {
+  const bookmarks = createApp(Bookmarks)
+  bookmarks.mount(bookmarksElement)
+}
 
 const homeElement = document.querySelector('#home')
 if (homeElement) {
