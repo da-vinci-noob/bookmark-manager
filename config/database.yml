@@ -87,7 +87,7 @@ production:
   primary: &primary_production
     <<: *default
     database: bookmark_manager_production
-    username: bookmark_manager
+    username: <%= ENV["BOOKMARK_MANAGER_DATABASE_USERNAME"] %>
     password: <%= ENV["BOOKMARK_MANAGER_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
