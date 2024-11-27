@@ -29,3 +29,10 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        tag:
+          attributes:
+            color:
+              invalid_format: must be a valid hex color code
