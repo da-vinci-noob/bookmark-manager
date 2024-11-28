@@ -88,12 +88,30 @@
           <h1 class="text-2xl font-bold">Bookmarks</h1>
           <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
         </div>
-        <button
-          @click="(showModal = true), (isEditing = false)"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Add Bookmark
-        </button>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              @click="layout = 'grid'"
+              class="px-3 py-1 rounded-md transition-colors duration-200"
+              :class="layout === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'"
+            >
+              <ViewGridIcon class="h-5 w-5 text-gray-600" />
+            </button>
+            <button
+              @click="layout = 'list'"
+              class="px-3 py-1 rounded-md transition-colors duration-200"
+              :class="layout === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'"
+            >
+              <ViewListIcon class="h-5 w-5 text-gray-600" />
+            </button>
+          </div>
+          <button
+            @click="(showModal = true), (isEditing = false)"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Add Bookmark
+          </button>
+        </div>
       </div>
 
       <!-- Search Box -->
@@ -113,11 +131,12 @@
           <p v-if="selectedTags.length > 0" class="text-gray-400 mt-2">Try removing some tag filters</p>
           <p v-if="searchQuery" class="text-gray-400 mt-2">Try modifying your search query</p>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Grid Layout -->
+        <div v-else-if="layout === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="bookmark in displayedBookmarks"
             :key="bookmark.id"
-            class="bg-white rounded-lg shadow-md overflow-hidden"
+            class="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
           >
             <!-- Thumbnail -->
             <div class="aspect-w-16 aspect-h-9">
@@ -173,6 +192,69 @@
                     <TrashIcon class="h-5 w-5" />
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- List Layout -->
+        <div v-else class="space-y-4">
+          <div
+            v-for="bookmark in displayedBookmarks"
+            :key="bookmark.id"
+            class="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex h-20"
+          >
+            <!-- Thumbnail -->
+            <a
+              :href="bookmark.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="w-28 flex-shrink-0 hover:opacity-90 transition-opacity relative group"
+            >
+              <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+              <img
+                v-if="bookmark.thumbnail_url"
+                :src="bookmark.thumbnail_url"
+                :alt="bookmark.title"
+                class="w-full h-20 object-cover"
+                @error="handleImageError"
+              />
+              <div v-else class="w-full h-20 bg-gray-200 flex items-center justify-center">
+                <DocumentIcon class="h-6 w-6 text-gray-400" />
+              </div>
+            </a>
+
+            <!-- Content -->
+            <div class="flex-1 p-2">
+              <div class="flex justify-between items-start">
+                <h3 class="text-base font-semibold mb-0.5 line-clamp-1 group-hover:text-blue-600">
+                  {{ bookmark.title || 'Untitled' }}
+                </h3>
+                <div class="flex space-x-1 ml-2">
+                  <button @click="openEditModal(bookmark)" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <PencilIcon class="h-4 w-4" />
+                  </button>
+                  <button @click="deleteBookmark(bookmark.id)" class="text-gray-400 hover:text-red-600 transition-colors">
+                    <TrashIcon class="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <p class="text-gray-600 text-xs mb-1 line-clamp-2">
+                {{ bookmark.description || 'No description available' }}
+              </p>
+              <!-- Tags -->
+              <div class="flex flex-wrap items-center gap-1">
+                <span
+                  v-for="tag in bookmark.tags"
+                  :key="tag.id"
+                  class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs"
+                  :style="{
+                    backgroundColor: `${tag.color || '#94a3b8'}16`,
+                    color: tag.color || '#64748b'
+                  }"
+                >
+                  <span class="w-1 h-1 rounded-full mr-1" :style="{ backgroundColor: tag.color || '#94a3b8' }"></span>
+                  {{ tag.name }}
+                </span>
               </div>
             </div>
           </div>
@@ -291,7 +373,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { DocumentIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import {
+  DocumentIcon,
+  PencilIcon,
+  TrashIcon,
+  Squares2X2Icon as ViewGridIcon,
+  ListBulletIcon as ViewListIcon
+} from '@heroicons/vue/24/outline'
 
 interface Tag {
   id: number
@@ -330,6 +418,7 @@ const currentSort = ref({
   direction: 'desc'
 })
 const errorMessage = ref('')
+const layout = ref('list')
 
 const filteredBookmarks = computed(() => {
   let result = [...bookmarks.value]
