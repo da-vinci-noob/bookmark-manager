@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full">
   <head>
     <title><%= content_for(:title) || "Bookmark Manager" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -32,33 +32,41 @@
       Visit the guide for more information: https://vite-ruby.netlify.app/guide/rails
     -->
 
+    <script>
+      // Check for dark mode preference on load
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    </script>
   </head>
 
-  <body>
-    <div class="min-h-screen bg-gray-50">
-      <nav class="bg-white shadow-sm">
+  <body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <nav class="bg-white dark:bg-gray-900 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
             <div class="flex">
               <div class="flex-shrink-0 flex items-center">
-                <h1 class="text-xl font-bold text-gray-900">Bookmark Manager</h1>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Bookmark Manager</h1>
               </div>
               <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <a
                 href="/"
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
                   Dashboard
                 </a>
                 <a
                 href="/bookmarks"
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
                   Bookmarks
                 </a>
                 <a
                 href="/tags"
-                class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-700 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
               >
                   Tags
                 </a>
@@ -66,7 +74,7 @@
             </div>
             <div class="flex items-center">
               <% if user_signed_in? %>
-                <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "border-transparent text-gray-100 bg-red-500 hover:bg-red-600 inline-flex items-center transition-colors rounded-lg px-4 py-2 border-b-2 text-sm font-medium" %>
+                <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "border-transparent text-gray-100 dark:text-gray-400 bg-red-500 dark:bg-red-700 hover:bg-red-600 dark:hover:bg-red-800 inline-flex items-center transition-colors rounded-lg px-4 py-2 border-b-2 text-sm font-medium" %>
               <% end %>
             </div>
           </div>

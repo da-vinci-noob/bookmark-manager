@@ -3,13 +3,13 @@
     <MobileNav />
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Tags</h1>
-        <p class="mt-2 text-sm text-gray-700">Manage your bookmark tags and their colors.</p>
+        <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">Tags</h1>
+        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">Manage your bookmark tags and their colors.</p>
       </div>
       <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
         <button
           type="button"
-          class="w-full sm:w-auto inline-flex items-center justify-center rounded-md border border-transparent bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
+          class="w-full sm:w-auto inline-flex items-center justify-center rounded-md border border-transparent bg-brand-primary dark:bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           @click="showAddTag = true"
         >
           Add Tag
@@ -21,18 +21,18 @@
     <div class="mt-6 sm:mt-8">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="inline-block min-w-full py-2 align-middle">
-          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 sm:rounded-lg">
             <!-- Mobile View -->
             <div class="sm:hidden">
-              <div class="divide-y divide-gray-200 bg-white">
+              <div class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                 <div v-for="tag in availableTags" :key="tag.id" class="p-4">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3">
                       <div class="h-5 w-5 rounded-full" :style="{ backgroundColor: tag.color }"></div>
-                      <span class="font-medium text-gray-900">{{ tag.name }}</span>
+                      <span class="font-medium text-gray-900 dark:text-white">{{ tag.name }}</span>
                     </div>
                     <div class="flex items-center space-x-4">
-                      <span class="text-sm text-gray-500">{{ tag.bookmarks.length || 0 }} bookmarks</span>
+                      <span class="text-sm text-gray-500 dark:text-gray-400">{{ tag.bookmarks.length || 0 }} bookmarks</span>
                       <div class="flex space-x-2">
                         <button
                           type="button"
@@ -56,31 +56,31 @@
             </div>
 
             <!-- Desktop View -->
-            <table class="hidden sm:table min-w-full divide-y divide-gray-300">
-              <thead class="bg-gray-50">
+            <table class="hidden sm:table min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+              <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-6">
                     Name
                   </th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Color</th>
-                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Bookmarks</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Color</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">Bookmarks</th>
                   <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                     <span class="sr-only">Actions</span>
                   </th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-200 bg-white">
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                 <tr v-for="tag in availableTags" :key="tag.id">
-                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-6">
                     {{ tag.name }}
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                     <div class="flex items-center">
                       <div class="h-6 w-6 rounded-full mr-2" :style="{ backgroundColor: tag.color }"></div>
                       {{ tag.color }}
                     </div>
                   </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                     {{ tag.bookmarks.length || 0 }}
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -104,41 +104,41 @@
     </div>
 
     <!-- Add/Edit Tag Modal -->
-    <div v-if="showAddTag" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full">
-        <h2 class="text-lg font-medium text-gray-900">{{ editingTag ? 'Edit Tag' : 'Add New Tag' }}</h2>
+    <div v-if="showAddTag" class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 max-w-lg w-full">
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ editingTag ? 'Edit Tag' : 'Add New Tag' }}</h2>
         <form @submit.prevent="submitTag" class="mt-4 space-y-4">
           <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
             <input
               type="text"
               id="name"
               v-model="newTag.name"
               required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+              class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
             />
           </div>
           <div>
-            <label for="color" class="block text-sm font-medium text-gray-700">Color</label>
+            <label for="color" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
             <input
               type="color"
               id="color"
               v-model="newTag.color"
               required
-              class="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
+              class="mt-1 block w-full h-10 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
             />
           </div>
           <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
           <div class="mt-5 sm:mt-6 flex space-x-3">
             <button
               type="submit"
-              class="inline-flex justify-center rounded-md border border-transparent bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 sm:w-auto"
+              class="inline-flex justify-center rounded-md border border-transparent bg-brand-primary dark:bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 sm:w-auto"
             >
               Save
             </button>
             <button
               type="button"
-              class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 sm:w-auto"
+              class="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 sm:w-auto"
               @click="cancelTagEdit"
             >
               Cancel
@@ -148,11 +148,13 @@
       </div>
     </div>
   </div>
+  <ThemeToggle class="fixed bottom-4 right-4" />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import MobileNav from '../shared/MobileNav.vue'
+import ThemeToggle from '../shared/ThemeToggle.vue'
 
 const showAddTag = ref(false)
 const availableTags = ref([])

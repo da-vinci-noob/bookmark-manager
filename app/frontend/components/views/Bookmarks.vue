@@ -8,7 +8,7 @@
         <div class="lg:hidden mb-4">
           <button
             @click="showMobileFilters = !showMobileFilters"
-            class="w-full flex items-center justify-between p-3 bg-white rounded-lg shadow-md"
+            class="w-full flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900"
           >
             <span class="font-semibold">Filters & Actions</span>
             <ChevronDownIcon
@@ -20,25 +20,25 @@
 
         <!-- Filters Content -->
         <div :class="{ hidden: !showMobileFilters }" class="lg:block space-y-4">
-          <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 p-4 mb-4">
             <h2 class="text-lg font-semibold mb-3">Statistics</h2>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-gray-600">Total Bookmarks</span>
+                <span class="text-gray-600 dark:text-gray-300">Total Bookmarks</span>
                 <span class="font-medium">{{ totalBookmarks }}</span>
               </div>
               <div class="flex justify-between items-center">
-                <span class="text-gray-600">Total Tags</span>
+                <span class="text-gray-600 dark:text-gray-300">Total Tags</span>
                 <span class="font-medium">{{ availableTags.length }}</span>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 p-4 mb-4">
             <h2 class="text-lg font-semibold mb-3">Filter by Tags</h2>
             <div class="space-y-2">
               <div class="mb-3">
-                <span class="text-sm text-gray-600">
+                <span class="text-sm text-gray-600 dark:text-gray-400">
                   {{ selectedTags.length ? `${selectedTags.length} tags selected` : 'No tags selected' }}
                 </span>
               </div>
@@ -46,53 +46,56 @@
                 v-for="tag in availableTags"
                 :key="tag.id"
                 @click="toggleTagFilter(tag.id)"
-                class="flex items-center justify-between p-2 rounded hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-                :class="{ 'bg-gray-100': selectedTags.includes(tag.id) }"
+                class="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                :class="{ 'bg-gray-100 dark:bg-gray-700': selectedTags.includes(tag.id) }"
                 :style="{ backgroundColor: selectedTags.includes(tag.id) ? `${tag.color}16` : '' }"
               >
                 <div class="flex items-center space-x-2">
                   <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: tag.color || '#94a3b8' }"></span>
-                  <span class="text-gray-700">{{ tag.name }}</span>
+                  <span class="text-gray-700 dark:text-gray-300">{{ tag.name }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <span class="text-sm text-gray-500">{{ getBookmarkCountByTag(tag.id) }}</span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{{ getBookmarkCountByTag(tag.id) }}</span>
                   <div v-if="selectedTags.includes(tag.id)" class="w-2 h-2 rounded-full bg-blue-500"></div>
                 </div>
               </div>
               <button
                 @click="showUntaggedOnly"
-                class="w-full p-2 text-left rounded hover:bg-gray-50 cursor-pointer transition-colors duration-200"
-                :class="{ 'bg-gray-100': isShowingUntagged }"
+                class="w-full p-2 text-left rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200"
+                :class="{ 'bg-gray-100 dark:bg-gray-700': isShowingUntagged }"
               >
                 Show Untagged
               </button>
               <div class="flex justify-between items-center mb-3">
-                <button @click="clearTagFilters" class="text-sm text-blue-600 hover:text-blue-800">
+                <button
+                  @click="clearTagFilters"
+                  class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
                   Clear All Filters
                 </button>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow-md p-4">
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 p-4">
             <h2 class="text-lg font-semibold mb-3">Quick Actions</h2>
             <div class="space-y-2">
               <div class="flex flex-col space-y-2 mb-2">
                 <button
                   @click="sortBookmarks('date')"
-                  class="px-3 py-2 rounded hover:bg-gray-100 flex justify-between"
-                  :class="{ 'bg-gray-100': currentSort.field === 'date' }"
+                  class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between"
+                  :class="{ 'bg-gray-100 dark:bg-gray-700': currentSort.field === 'date' }"
                 >
                   <span>Sort by Date</span>
-                  <span class="text-gray-500">{{ getSortIndicator('date') }}</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{ getSortIndicator('date') }}</span>
                 </button>
                 <button
                   @click="sortBookmarks('title')"
-                  class="px-3 py-2 rounded hover:bg-gray-100 flex justify-between"
-                  :class="{ 'bg-gray-100': currentSort.field === 'title' }"
+                  class="px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between"
+                  :class="{ 'bg-gray-100 dark:bg-gray-700': currentSort.field === 'title' }"
                 >
                   <span>Sort by Title</span>
-                  <span class="text-gray-500">{{ getSortIndicator('title') }}</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{ getSortIndicator('title') }}</span>
                 </button>
               </div>
             </div>
@@ -104,7 +107,7 @@
       <div class="flex-1">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
           <div class="mb-4 sm:mb-0">
-            <h1 class="text-2xl font-bold">Bookmarks</h1>
+            <h1 class="text-2xl font-bold dark:text-white">Bookmarks</h1>
             <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
           </div>
           <div class="flex items-center space-x-4 w-full sm:w-auto">
@@ -114,31 +117,35 @@
                 v-model="searchQuery"
                 type="text"
                 placeholder="Search bookmarks by title, description, or tags..."
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
               />
             </div>
             <!-- View Toggle -->
-            <div class="flex items-center bg-gray-100 rounded-lg p-1">
+            <div class="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
               <button
                 @click="layout = 'grid'"
                 class="p-1.5 rounded-md transition-colors duration-200"
-                :class="layout === 'grid' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'"
+                :class="
+                  layout === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                "
                 title="Grid view"
               >
-                <ViewGridIcon class="h-5 w-5 text-gray-600" />
+                <ViewGridIcon class="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </button>
               <button
                 @click="layout = 'list'"
                 class="p-1.5 rounded-md transition-colors duration-200"
-                :class="layout === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'"
+                :class="
+                  layout === 'list' ? 'bg-white dark:bg-gray-600 shadow-sm' : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                "
                 title="List view"
               >
-                <ViewListIcon class="h-5 w-5 text-gray-600" />
+                <ViewListIcon class="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
             <button
               @click="(showModal = true), (isEditing = false)"
-              class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              class="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 dark:hover:bg-blue-600"
             >
               Add Bookmark
             </button>
@@ -148,9 +155,11 @@
         <!-- Bookmarks Grid/List -->
         <div class="mt-8">
           <div v-if="displayedBookmarks.length === 0" class="text-center py-8">
-            <p class="text-gray-500 text-lg">No bookmarks found</p>
-            <p v-if="selectedTags.length > 0" class="text-gray-400 mt-2">Try removing some tag filters</p>
-            <p v-if="searchQuery" class="text-gray-400 mt-2">Try modifying your search query</p>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">No bookmarks found</p>
+            <p v-if="selectedTags.length > 0" class="text-gray-400 dark:text-gray-500 mt-2">
+              Try removing some tag filters
+            </p>
+            <p v-if="searchQuery" class="text-gray-400 dark:text-gray-500 mt-2">Try modifying your search query</p>
           </div>
           <div v-else>
             <!-- Grid Layout -->
@@ -158,7 +167,7 @@
               <div
                 v-for="bookmark in displayedBookmarks"
                 :key="bookmark.id"
-                class="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
               >
                 <!-- Thumbnail -->
                 <a
@@ -181,9 +190,10 @@
                     :href="bookmark.url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="block text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2"
-                  >{{ bookmark.title }}</a>
-                  <p class="mt-1 text-sm text-gray-500 line-clamp-2">{{ bookmark.description }}</p>
+                    class="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-2"
+                    >{{ bookmark.title }}</a
+                  >
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{{ bookmark.description }}</p>
                   <div class="mt-2 flex flex-wrap gap-2">
                     <span
                       v-for="tag in bookmark.tags"
@@ -198,10 +208,16 @@
                     </span>
                   </div>
                   <div class="mt-4 flex justify-end items-center space-x-2">
-                    <button @click="openEditModal(bookmark)" class="text-gray-400 hover:text-gray-500">
+                    <button
+                      @click="openEditModal(bookmark)"
+                      class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"
+                    >
                       <PencilIcon class="h-5 w-5" />
                     </button>
-                    <button @click="deleteBookmark(bookmark.id)" class="text-gray-400 hover:text-red-500">
+                    <button
+                      @click="deleteBookmark(bookmark.id)"
+                      class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+                    >
                       <TrashIcon class="h-5 w-5" />
                     </button>
                   </div>
@@ -214,7 +230,7 @@
               <div
                 v-for="bookmark in displayedBookmarks"
                 :key="bookmark.id"
-                class="bg-white rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex h-20"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex h-22"
               >
                 <!-- Thumbnail -->
                 <a
@@ -231,8 +247,8 @@
                     class="w-full h-20 object-cover"
                     @error="handleImageError"
                   />
-                  <div v-else class="w-full h-20 bg-gray-200 flex items-center justify-center">
-                    <DocumentIcon class="h-6 w-6 text-gray-400" />
+                  <div v-else class="w-full h-20 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    <DocumentIcon class="h-6 w-6 text-gray-400 dark:text-gray-500" />
                   </div>
                 </a>
 
@@ -243,27 +259,27 @@
                       :href="bookmark.url"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="text-base font-semibold mb-0.5 line-clamp-1 text-gray-900 hover:text-blue-600 transition-colors"
+                      class="text-base font-semibold mb-0.5 line-clamp-1 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       {{ bookmark.title || 'Untitled' }}
                     </a>
                     <div class="flex space-x-1 ml-2">
                       <button
                         @click="openEditModal(bookmark)"
-                        class="text-gray-400 hover:text-gray-600 transition-colors"
+                        class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
                       >
                         <PencilIcon class="h-4 w-4" />
                       </button>
                       <button
                         @click="deleteBookmark(bookmark.id)"
-                        class="text-gray-400 hover:text-red-600 transition-colors"
+                        class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                       >
                         <TrashIcon class="h-4 w-4" />
                       </button>
                     </div>
                   </div>
 
-                  <p class="text-gray-600 text-xs mb-1 line-clamp-2">
+                  <p class="text-gray-600 dark:text-gray-400 text-xs mb-1 line-clamp-2">
                     {{ bookmark.description || 'No description available' }}
                   </p>
                   <!-- Tags -->
@@ -302,7 +318,7 @@
               leave-from="opacity-100"
               leave-to="opacity-0"
             >
-              <div class="fixed inset-0 bg-black bg-opacity-25" />
+              <div class="fixed inset-0 bg-black bg-opacity-25 dark:bg-gray-900 dark:bg-opacity-75" />
             </TransitionChild>
 
             <div class="fixed inset-0 overflow-y-auto">
@@ -317,46 +333,46 @@
                   leave-to="opacity-0 scale-95"
                 >
                   <DialogPanel
-                    class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                    class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all"
                   >
-                    <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                    <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
                       {{ isEditing ? 'Edit Bookmark' : 'Add New Bookmark' }}
                     </DialogTitle>
 
                     <form @submit.prevent="submitBookmark" class="mt-4 space-y-4">
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">URL</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL</label>
                         <input
                           v-model="currentBookmark.url"
                           @blur="fetchThumbnail"
                           type="url"
                           required
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
                         />
-                        <span class="text-xs text-gray-600">http:// or https:// * Required</span>
+                        <span class="text-xs text-gray-600 dark:text-gray-400">http:// or https:// * Required</span>
                       </div>
 
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">Title</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
                         <input
                           v-model="currentBookmark.title"
                           type="text"
                           required
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
                         />
                       </div>
 
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
                         <textarea
                           v-model="currentBookmark.description"
                           rows="3"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                          class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-brand-primary focus:ring-brand-primary dark:focus:ring-blue-500 sm:text-sm"
                         ></textarea>
                       </div>
 
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">Tags</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tags</label>
                         <div class="mt-1 flex flex-wrap gap-2">
                           <div v-for="tag in availableTags" :key="tag.id" class="flex items-center">
                             <input
@@ -364,9 +380,9 @@
                               :id="'tag-' + tag.id"
                               :value="tag.id"
                               v-model="currentBookmark.tag_ids"
-                              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                             />
-                            <label :for="'tag-' + tag.id" class="ml-2 text-sm text-gray-600">
+                            <label :for="'tag-' + tag.id" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
                               {{ tag.name }}
                             </label>
                           </div>
@@ -377,13 +393,13 @@
                         <button
                           type="button"
                           @click="closeModal"
-                          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          class="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          class="rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                          class="rounded-md border border-transparent bg-blue-600 dark:bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                         >
                           {{ isEditing ? 'Save Changes' : 'Add Bookmark' }}
                         </button>
@@ -397,6 +413,7 @@
         </TransitionRoot>
       </div>
     </div>
+    <ThemeToggle class="fixed bottom-4 right-4" />
   </div>
 </template>
 
@@ -412,6 +429,7 @@ import {
   ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import MobileNav from '../shared/MobileNav.vue'
+import ThemeToggle from '../shared/ThemeToggle.vue'
 
 interface Tag {
   id: number

@@ -1,71 +1,84 @@
 <template>
-  <div class="px-3 sm:px-6">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <MobileNav />
-    <div class="sm:flex sm:items-center">
-      <div class="sm:flex-auto">
-        <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900">Dashboard</h1>
-        <p class="mt-2 text-sm sm:text-base text-gray-700">
-          Welcome to your bookmark manager. Here's an overview of your saved links and tags.
-        </p>
-      </div>
-    </div>
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center min-h-screen py-12">
+      <div class="w-full max-w-4xl">
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+            Welcome to Bookmark Manager
+          </h1>
+          <p class="mt-3 text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl">
+            Organize and manage your bookmarks efficiently
+          </p>
+          <div class="mt-8 flex justify-center">
+            <div class="rounded-md shadow">
+              <a
+                href="/bookmarks"
+                class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 md:py-4 md:text-lg md:px-10"
+              >
+                View Bookmarks
+              </a>
+            </div>
+          </div>
 
-    <div class="mt-4 sm:mt-8 grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Recent Bookmarks -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-3 sm:p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <BookmarkIcon class="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
-            </div>
-            <div class="ml-2 sm:ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Bookmarks</dt>
-                <dd class="flex items-baseline">
-                  <div class="text-xl sm:text-2xl font-semibold text-gray-900">{{ bookmarks.length }}</div>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-        <div class="bg-gray-50 px-3 sm:px-5 py-2">
-          <div class="text-sm">
-            <a href="/bookmarks" class="font-medium text-brand-primary hover:text-brand-secondary"> View all </a>
-          </div>
-        </div>
-      </div>
+          <!-- Stats Section -->
+          <div class="mt-12 w-full">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8 px-4 sm:px-0">
+              <!-- Bookmarks stat -->
+              <div
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-all duration-300 hover:shadow-xl"
+              >
+                <div class="p-6 sm:p-8">
+                  <div class="flex items-center justify-center sm:justify-start">
+                    <div class="flex-shrink-0">
+                      <BookmarkIcon class="h-8 w-8 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+                    </div>
+                    <div class="ml-5">
+                      <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Bookmarks</dt>
+                        <dd class="mt-1 flex items-baseline justify-center sm:justify-start">
+                          <div class="text-3xl font-semibold text-gray-900 dark:text-white">{{ bookmarks.length }}</div>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-      <!-- Tags -->
-      <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="p-3 sm:p-5">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <TagIcon class="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+              <!-- Tags stat -->
+              <div
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-all duration-300 hover:shadow-xl"
+              >
+                <div class="p-6 sm:p-8">
+                  <div class="flex items-center justify-center sm:justify-start">
+                    <div class="flex-shrink-0">
+                      <TagIcon class="h-8 w-8 text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
+                    </div>
+                    <div class="ml-5">
+                      <dl>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Tags</dt>
+                        <dd class="mt-1 flex items-baseline justify-center sm:justify-start">
+                          <div class="text-3xl font-semibold text-gray-900 dark:text-white">{{ tags.length }}</div>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="ml-2 sm:ml-5 w-0 flex-1">
-              <dl>
-                <dt class="text-sm font-medium text-gray-500 truncate">Tags</dt>
-                <dd class="flex items-baseline">
-                  <div class="text-xl sm:text-2xl font-semibold text-gray-900">{{ tags.length }}</div>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-        <div class="bg-gray-50 px-3 sm:px-5 py-2">
-          <div class="text-sm">
-            <a href="/tags" class="font-medium text-brand-primary hover:text-brand-secondary"> View all </a>
           </div>
         </div>
       </div>
-    </div>
+    </main>
+    <ThemeToggle class="fixed bottom-4 right-4" />
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue'
 import { BookmarkIcon, TagIcon } from '@heroicons/vue/24/outline/index.js'
 import MobileNav from '../shared/MobileNav.vue'
+import ThemeToggle from '../shared/ThemeToggle.vue'
 
 const bookmarks = ref([])
 const tags = ref([])
