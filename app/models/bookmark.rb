@@ -8,7 +8,7 @@ class Bookmark < ApplicationRecord
   validates :url, presence: true, format: URI::DEFAULT_PARSER.make_regexp(%w[http https])
   validates :title, presence: true
 
-  scope :for_user, ->(user) { where(user: user) }
+  scope :for_user, ->(user) { where(user:) }
 
   # Prevent N+1 queries
   scope :with_associations, -> { includes(:tags, :bookmark_tags) }
