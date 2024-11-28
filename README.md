@@ -30,6 +30,27 @@ A privacy-focused, self-hosted bookmark management solution built with Ruby on R
 - Node.js and Yarn
 - PostgreSQL
 
+## Initial Setup
+
+Before running the application, you'll need to set up your Rails master key. You can generate it using Docker without installing Rails locally:
+
+1. Remove the existing credentials file as it won't work with a new master key:
+```bash
+rm config/credentials.yml.enc
+```
+
+2. Generate a secure key using OpenSSL:
+```bash
+openssl rand -hex 32
+```
+
+3. Create a new file named `config/master.key` with the generated key:
+```bash
+echo "your-generated-key" > config/master.key
+```
+
+4. Keep your `master.key` secure - it's automatically ignored by git for security.
+
 ## Setup
 
 1. Clone the repository:
@@ -79,7 +100,7 @@ docker run -d \
 
 ### Environment Variables
 
-- `RAILS_MASTER_KEY`: Your Rails master key (found in config/master.key)
+- `RAILS_MASTER_KEY`: Your Rails master key (from the `config/master.key` file you generated)
 - `DB_HOST`: PostgreSQL database host
 - `BOOKMARK_MANAGER_DATABASE_USERNAME`: Database username
 - `BOOKMARK_MANAGER_DATABASE_PASSWORD`: Database password

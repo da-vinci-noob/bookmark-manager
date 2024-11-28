@@ -4,8 +4,8 @@ class BookmarksController < ApplicationController
   before_action :set_bookmark, only: %i[show update destroy]
 
   def index
-    @bookmarks = Bookmark.includes(:tags)
-    @tags = Tag.all
+    @bookmarks = current_user.bookmarks.includes(:tags)
+    @tags = current_user.tags
 
     respond_to do |format|
       format.html # renders index.html.erb
@@ -21,6 +21,7 @@ class BookmarksController < ApplicationController
 
   def create
     @bookmark = Bookmark.new(bookmark_params)
+    @bookmark.user = current_user
     bookmark_create(:created)
   end
 
@@ -56,7 +57,7 @@ class BookmarksController < ApplicationController
   private
 
   def set_bookmark
-    @bookmark = Bookmark.find(params[:id])
+    @bookmark = current_user.bookmarks.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_error('Bookmark not found', :not_found)
   end

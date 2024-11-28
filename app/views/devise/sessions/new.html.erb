@@ -1,0 +1,60 @@
+<div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <h2 class="text-center text-3xl font-bold tracking-tight text-gray-900">
+      Welcome back
+    </h2>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-6" }) do |f| %>
+        <div>
+          <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
+          <div class="mt-1">
+            <%= f.email_field :email, autofocus: true, autocomplete: "email",
+                class: "block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-brand-primary sm:text-sm",
+                placeholder: "you@example.com" %>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between">
+            <%= f.label :password, class: "block text-sm font-medium text-gray-700" %>
+            <%= link_to "Forgot password?", new_password_path(resource_name), class: "text-sm font-medium text-brand-primary hover:text-brand-secondary" if devise_mapping.recoverable? %>
+          </div>
+          <div class="mt-1">
+            <%= f.password_field :password, autocomplete: "current-password",
+                class: "block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-brand-primary sm:text-sm",
+                placeholder: "••••••••" %>
+          </div>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="flex items-center">
+            <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary" %>
+            <%= f.label :remember_me, class: "ml-2 block text-sm text-gray-900" %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.submit "Sign in", class: "flex w-full justify-center rounded-md border border-transparent bg-brand-primary py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-secondary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2" %>
+        </div>
+      <% end %>
+
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="bg-white px-2 text-gray-500">Don't have an account?</span>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <%= link_to "Sign up", new_registration_path(resource_name), class: "flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

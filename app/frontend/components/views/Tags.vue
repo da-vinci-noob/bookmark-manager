@@ -93,6 +93,7 @@
               class="mt-1 block w-full h-10 rounded-md border-gray-300 shadow-sm focus:border-brand-primary focus:ring-brand-primary sm:text-sm"
             />
           </div>
+          <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
           <div class="mt-5 sm:mt-6 flex space-x-3">
             <button
               type="submit"
@@ -120,6 +121,7 @@ import { ref, onMounted } from 'vue'
 const showAddTag = ref(false)
 const availableTags = ref([])
 const editingTag = ref(null)
+const errorMessage = ref('')
 
 const newTag = ref({
   name: '',
@@ -132,12 +134,14 @@ const resetNewTag = (tagName = '', tagColor = '#3B82F6') => {
 }
 
 const editTag = (tag) => {
+  errorMessage.value = '' // Clear error when starting edit
   editingTag.value = tag
   resetNewTag(tag.name, tag.color)
   showAddTag.value = true
 }
 
 const cancelTagEdit = () => {
+  errorMessage.value = '' // Clear error when canceling
   editingTag.value = null
   resetNewTag()
   showAddTag.value = false
@@ -145,6 +149,7 @@ const cancelTagEdit = () => {
 
 const submitTag = async () => {
   try {
+    errorMessage.value = '' // Clear error before submitting
     const tagData = {
       tag: {
         name: newTag.value.name,
@@ -176,7 +181,7 @@ const submitTag = async () => {
     showAddTag.value = false
     editingTag.value = null
   } catch (err) {
-    console.error('Error saving tag:', err)
+    errorMessage.value = err.message || 'An error occurred while saving the tag'
   }
 }
 
@@ -184,6 +189,7 @@ const deleteTag = async (id) => {
   if (!confirm('Are you sure you want to delete this tag?')) return
 
   try {
+    errorMessage.value = '' // Clear error before deleting
     const response = await fetch(`/tags/${id}`, {
       method: 'DELETE',
       headers: {
@@ -196,7 +202,7 @@ const deleteTag = async (id) => {
     }
     await fetchTags()
   } catch (err) {
-    console.error('Error deleting tag:', err)
+    errorMessage.value = err.message || 'An error occurred while deleting the tag'
   }
 }
 

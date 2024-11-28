@@ -2,7 +2,7 @@
 
 class HomeController < ApplicationController
   def index
-    @bookmarks = Bookmark.all
-    @tags = Tag.all
+    @bookmarks = current_user.bookmarks
+    @tags = current_user.tags
   end
 end

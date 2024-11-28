@@ -4,7 +4,7 @@ class TagsController < ApplicationController
   before_action :set_tag, only: %i[update destroy]
 
   def index
-    @tags = Tag.includes(:bookmarks)
+    @tags = current_user.tags.includes(:bookmarks)
     respond_to do |format|
       format.html # renders index.html.erb
       format.json do
@@ -15,6 +15,7 @@ class TagsController < ApplicationController
 
   def create
     @tag = Tag.new(tag_params)
+    @tag.user = current_user
 
     if @tag.save
       render json: @tag, status: :created
@@ -39,7 +40,7 @@ class TagsController < ApplicationController
   private
 
   def set_tag
-    @tag = Tag.find(params[:id])
+    @tag = current_user.tags.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_error('Tag not found', :not_found)
   end

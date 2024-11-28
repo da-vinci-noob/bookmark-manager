@@ -84,7 +84,10 @@
     <!-- Main Content -->
     <div class="flex-1">
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Bookmarks</h1>
+        <div>
+          <h1 class="text-2xl font-bold">Bookmarks</h1>
+          <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
+        </div>
         <button
           @click="(showModal = true), (isEditing = false)"
           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -257,7 +260,7 @@
                         </div>
                       </div>
                     </div>
-
+                    <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
                     <div class="mt-6 flex justify-end space-x-3">
                       <button
                         type="button"
@@ -325,6 +328,7 @@ const currentSort = ref({
   field: 'date',
   direction: 'desc'
 })
+const errorMessage = ref('')
 
 const filteredBookmarks = computed(() => {
   let result = [...bookmarks.value]
@@ -386,10 +390,12 @@ const closeModal = () => {
     created_at: new Date().toISOString()
   }
   isEditing.value = false
+  errorMessage.value = ''
 }
 
 const submitBookmark = async () => {
   try {
+    errorMessage.value = ''
     const bookmarkData = {
       bookmark: {
         url: currentBookmark.value.url,
@@ -425,14 +431,15 @@ const submitBookmark = async () => {
     await fetchData()
     closeModal()
   } catch (err) {
-    console.error('Error saving bookmark:', err)
+    errorMessage.value = err.message || 'An error occurred while saving the bookmark'
   }
 }
 
 const fetchThumbnail = async () => {
-  if (!currentBookmark.value.url) return
-
   try {
+    errorMessage.value = ''
+    if (!currentBookmark.value.url) return
+
     const response = await fetch(`/bookmarks/fetch_thumbnail?url=${encodeURIComponent(currentBookmark.value.url)}`)
     if (!response.ok) throw new Error('Failed to fetch thumbnail')
 
@@ -441,14 +448,15 @@ const fetchThumbnail = async () => {
     currentBookmark.value.description = data.description || currentBookmark.value.description
     currentBookmark.value.thumbnail_url = data.thumbnail_url || ''
   } catch (err) {
-    console.error('Error fetching thumbnail:', err)
+    errorMessage.value = err.message || 'An error occurred while fetching the thumbnail'
   }
 }
 
 const deleteBookmark = async (id: number) => {
-  if (!confirm('Are you sure you want to delete this bookmark?')) return
-
   try {
+    errorMessage.value = ''
+    if (!confirm('Are you sure you want to delete this bookmark?')) return
+
     const response = await fetch(`/bookmarks/${id}`, {
       method: 'DELETE',
       headers: {
@@ -463,7 +471,7 @@ const deleteBookmark = async (id: number) => {
 
     await fetchData()
   } catch (err) {
-    console.error('Error deleting bookmark:', err)
+    errorMessage.value = err.message || 'An error occurred while deleting the bookmark'
   }
 }
 
@@ -521,6 +529,7 @@ const getSortIndicator = (field: string) => {
 
 const fetchData = async () => {
   try {
+    errorMessage.value = ''
     const params: Record<string, any> = {}
 
     if (searchQuery.value) {
@@ -544,12 +553,13 @@ const fetchData = async () => {
     bookmarks.value = data.bookmarks || []
     availableTags.value = data.tags || []
   } catch (err) {
-    console.error('Error fetching bookmarks:', err)
+    errorMessage.value = err.message || 'An error occurred while fetching bookmarks'
   }
 }
 
 const fetchTags = () => {
   try {
+    errorMessage.value = ''
     const tagsElement = document.getElementById('tags')
     if (tagsElement) {
       // Get Tags from data attribute
@@ -557,7 +567,7 @@ const fetchTags = () => {
       availableTags.value = tagsData ? JSON.parse(tagsData) : []
     }
   } catch (err) {
-    console.error('Error fetching tags:', err)
+    errorMessage.value = err.message || 'An error occurred while fetching tags'
   }
 }
 
