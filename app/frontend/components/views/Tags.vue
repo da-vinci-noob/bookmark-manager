@@ -1,14 +1,15 @@
 <template>
-  <div>
+  <div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <MobileNav />
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-2xl font-semibold text-gray-900">Tags</h1>
+        <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Tags</h1>
         <p class="mt-2 text-sm text-gray-700">Manage your bookmark tags and their colors.</p>
       </div>
       <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
         <button
           type="button"
-          class="inline-flex items-center justify-center rounded-md border border-transparent bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 sm:w-auto"
+          class="w-full sm:w-auto inline-flex items-center justify-center rounded-md border border-transparent bg-brand-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
           @click="showAddTag = true"
         >
           Add Tag
@@ -17,11 +18,45 @@
     </div>
 
     <!-- Tags List -->
-    <div class="mt-8 flex flex-col">
+    <div class="mt-6 sm:mt-8">
       <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-300">
+        <div class="inline-block min-w-full py-2 align-middle">
+          <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+            <!-- Mobile View -->
+            <div class="sm:hidden">
+              <div class="divide-y divide-gray-200 bg-white">
+                <div v-for="tag in availableTags" :key="tag.id" class="p-4">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div class="h-5 w-5 rounded-full" :style="{ backgroundColor: tag.color }"></div>
+                      <span class="font-medium text-gray-900">{{ tag.name }}</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                      <span class="text-sm text-gray-500">{{ tag.bookmarks.length || 0 }} bookmarks</span>
+                      <div class="flex space-x-2">
+                        <button
+                          type="button"
+                          class="text-brand-primary hover:text-brand-secondary"
+                          @click="editTag(tag)"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          class="text-red-600 hover:text-red-900"
+                          @click="deleteTag(tag.id)"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Desktop View -->
+            <table class="hidden sm:table min-w-full divide-y divide-gray-300">
               <thead class="bg-gray-50">
                 <tr>
                   <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
@@ -69,8 +104,8 @@
     </div>
 
     <!-- Add/Edit Tag Modal -->
-    <div v-if="showAddTag" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-      <div class="bg-white rounded-lg p-6 max-w-lg w-full">
+    <div v-if="showAddTag" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full">
         <h2 class="text-lg font-medium text-gray-900">{{ editingTag ? 'Edit Tag' : 'Add New Tag' }}</h2>
         <form @submit.prevent="submitTag" class="mt-4 space-y-4">
           <div>
@@ -117,6 +152,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import MobileNav from '../shared/MobileNav.vue'
 
 const showAddTag = ref(false)
 const availableTags = ref([])
