@@ -2,6 +2,21 @@
 
 A privacy-focused, self-hosted bookmark management solution built with Ruby on Rails and Vue.js. Take control of your bookmarks and keep your data private by hosting it on your own infrastructure.
 
+<table align="center">
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/83b81063-0aad-4746-a90e-3f59141bc7f7" alt="Authentication" width="420px" height="300px"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/2e72f8b3-fb8c-451a-835f-11badda58cea" alt="Homepage" width="420px" height="300px"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/f6d1990f-f0ba-4034-818e-236a0782ae7a" alt="Bookmarks" width="420px" height="300px"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/5a930c19-b3e9-4b65-858b-cea572183d41" alt="Tags" width="420px" height="140px"></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/73609696-a27a-4fc2-9191-dee116aa6a85" alt="MobileBookmarks" width="220px" height="350px"></td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6043f076-eefd-4dc5-bb83-c74088f6f1a3" alt="MobileTags" width="220px" height="350px"></td>
+  </tr>
+</table>
+
 ## Why Self-Host?
 
 - **Complete Privacy**: Your bookmarks and data stay on your own server
@@ -12,17 +27,25 @@ A privacy-focused, self-hosted bookmark management solution built with Ruby on R
 
 ## Features
 
-- Create and manage bookmarks
-- Organize bookmarks with tags
-- Search and filter bookmarks
-- Responsive Vue.js frontend
+- Modern, responsive interface built with Vue.js
+- Create, edit, and manage bookmarks with ease
+- Powerful tagging system for better organization
+- Advanced search and filtering capabilities
+- Mobile-friendly design with dedicated mobile navigation
+- Dark/Light theme support
+- Fast and efficient bookmark management
+- Secure authentication system
 
 ## Tech Stack
 
-- Backend: Ruby on Rails
-- Frontend: Vue.js
-- Database: PostgreSQL
-- Styling: Tailwind CSS
+### Backend
+- Ruby on Rails 7
+- PostgreSQL database
+
+### Frontend
+- Vue.js 3 with Composition API
+- Vite.js for fast development and building
+- Tailwind CSS for modern, responsive styling
 
 ## Prerequisites
 
