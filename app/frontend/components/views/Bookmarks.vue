@@ -196,7 +196,7 @@
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{{ bookmark.description }}</p>
                   <div class="mt-2 flex flex-wrap gap-2">
                     <span
-                      v-for="tag in bookmark.tags"
+                      v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
                       :key="tag.id"
                       class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
                       :style="{
@@ -285,7 +285,7 @@
                   <!-- Tags -->
                   <div class="flex flex-wrap items-center gap-1">
                     <span
-                      v-for="tag in bookmark.tags"
+                      v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
                       :key="tag.id"
                       class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs"
                       :style="{
