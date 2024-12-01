@@ -619,9 +619,9 @@ const deleteBookmark = async (id: number) => {
 const toggleTagFilter = (tagId: number) => {
   const index = selectedTags.value.indexOf(tagId)
   if (index > -1) {
-    selectedTags.value = []
+    selectedTags.value.splice(index, 1)
   } else {
-    selectedTags.value = [tagId]
+    selectedTags.value.push(tagId)
   }
   isShowingUntagged.value = false
 }
