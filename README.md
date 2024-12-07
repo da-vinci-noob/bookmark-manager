@@ -177,6 +177,25 @@ The application will be available at http://localhost
 - Consider using Docker secrets or environment files
 - Keep your Docker images updated
 
+## Configuration
+
+### User Registration
+
+By default, new user registrations are enabled. To disable user registrations (e.g., for a private instance), set the `DISABLE_REGISTRATIONS` environment variable:
+
+```bash
+# Disable new user registrations
+export DISABLE_REGISTRATIONS=true
+
+# Or in your .env file
+DISABLE_REGISTRATIONS=true
+```
+
+When registrations are disabled:
+- The registration link will be hidden from the login page
+- Registration routes will be disabled
+- Any attempts to create new users will be blocked
+
 ## Link Preview Setup
 
 To enable automatic thumbnail generation for your bookmarks:
