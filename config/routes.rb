@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, skip: [:passwords, :confirmations]
+  devise_for :users, skip: [:passwords, :confirmations].tap { |skips| skips << :registrations if ENV['DISABLE_REGISTRATIONS'] }
 
   resources :bookmarks, only: %i[index create update destroy] do
     collection do
