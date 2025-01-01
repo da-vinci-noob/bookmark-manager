@@ -113,17 +113,16 @@ docker build -t bookmark_manager .
 ```bash
 docker run -d \
   -p 80:80 \
-  -e RAILS_MASTER_KEY=<your-master-key> \
-  -e DB_HOST=your-db-host \
-  -e BOOKMARK_MANAGER_DATABASE_USERNAME=your-db-user \
-  -e BOOKMARK_MANAGER_DATABASE_PASSWORD=your-db-password \
+  -e SECRET_KEY_BASE_DUMMY=1 \
+  -e DB_HOST=<your-db-host> \
+  -e BOOKMARK_MANAGER_DATABASE_USERNAME=<your-db-user> \
+  -e BOOKMARK_MANAGER_DATABASE_PASSWORD=<your-db-password> \
   --name bookmark_manager \
   bookmark_manager
 ```
 
 ### Environment Variables
 
-- `RAILS_MASTER_KEY`: Your Rails master key (from the `config/master.key` file you generated)
 - `DB_HOST`: PostgreSQL database host
 - `BOOKMARK_MANAGER_DATABASE_USERNAME`: Database username
 - `BOOKMARK_MANAGER_DATABASE_PASSWORD`: Database password
@@ -141,7 +140,7 @@ services:
     ports:
       - "80:80"
     environment:
-      - RAILS_MASTER_KEY=<your-master-key>
+      - SECRET_KEY_BASE_DUMMY=1
       - DB_HOST=db
       - BOOKMARK_MANAGER_DATABASE_USERNAME=postgres
       - BOOKMARK_MANAGER_DATABASE_PASSWORD=password
@@ -213,7 +212,7 @@ For Docker deployment, add the environment variable:
 ```bash
 docker run -d \
   -p 80:80 \
-  -e RAILS_MASTER_KEY=<your-master-key> \
+  -e SECRET_KEY_BASE_DUMMY=1 \
   -e DB_HOST=your-db-host \
   -e BOOKMARK_MANAGER_DATABASE_USERNAME=your-db-user \
   -e BOOKMARK_MANAGER_DATABASE_PASSWORD=your-db-password \
