@@ -2,6 +2,14 @@
 
 A privacy-focused, self-hosted bookmark management solution built with Ruby on Rails and Vue.js. Take control of your bookmarks and keep your data private by hosting it on your own infrastructure.
 
+## Demo
+Live URL: https://bookmarks.da-vinci-noob.com
+```
+Username: demo@test.com
+Password: demo@test.com
+```
+> Note: All the Bookmarks and Tags will be deleted everyday
+
 <table align="center">
   <tr>
     <td align="center"><img src="https://github.com/user-attachments/assets/83b81063-0aad-4746-a90e-3f59141bc7f7" alt="Authentication" width="420px" height="300px"></td>
