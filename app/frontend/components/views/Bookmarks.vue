@@ -167,59 +167,80 @@
               <div
                 v-for="bookmark in displayedBookmarks"
                 :key="bookmark.id"
-                class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-900 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex flex-col h-[420px]"
               >
                 <!-- Thumbnail -->
-                <a
-                  :href="bookmark.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="block aspect-w-16 aspect-h-9 hover:opacity-90 transition-opacity relative group"
-                >
-                  <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                  <img
-                    :src="bookmark.thumbnail_url || '/default-thumbnail.png'"
-                    :alt="bookmark.title"
-                    class="object-cover w-full h-full"
-                    @error="handleImageError"
-                  />
-                </a>
-                <!-- Content -->
-                <div class="p-4">
+                <div class="relative h-40 overflow-hidden rounded-t-lg">
                   <a
                     :href="bookmark.url"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="block text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-2"
-                    >{{ bookmark.title }}</a
+                    class="block aspect-w-16 aspect-h-9 hover:opacity-90 transition-opacity relative group"
                   >
-                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{{ bookmark.description }}</p>
-                  <div class="mt-2 flex flex-wrap gap-2">
-                    <span
-                      v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
-                      :key="tag.id"
-                      class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
-                      :style="{
-                        backgroundColor: `${tag.color}16`,
-                        color: tag.color
-                      }"
+                    <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                    <img
+                      :src="bookmark.thumbnail_url || '/default-thumbnail.png'"
+                      :alt="bookmark.title"
+                      class="object-cover w-full h-full"
+                      @error="handleImageError"
+                    />
+                  </a>
+                </div>
+                <!-- Content -->
+                <div class="p-4 flex flex-col flex-grow">
+                  <p class="line-clamp-2">
+                    <a
+                      :href="bookmark.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-lg font-semibold text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-2 overflow-hidden"
                     >
-                      {{ tag.name }}
-                    </span>
-                  </div>
-                  <div class="mt-4 flex justify-end items-center space-x-2">
-                    <button
-                      @click="openEditModal(bookmark)"
-                      class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400"
-                    >
-                      <PencilIcon class="h-5 w-5" />
-                    </button>
-                    <button
-                      @click="deleteBookmark(bookmark.id)"
-                      class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
-                    >
-                      <TrashIcon class="h-5 w-5" />
-                    </button>
+                      {{ bookmark.title || 'Untitled' }}
+                    </a>
+                  </p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-4 mb-3">{{ bookmark.description }}</p>
+                  <div class="mt-auto">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                      <span
+                        v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
+                        :key="tag.id"
+                        class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                        :style="{
+                          backgroundColor: `${tag.color}16`,
+                          color: tag.color
+                        }"
+                      >
+                        {{ tag.name }}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <div class="text-gray-500">
+                        <CalendarIcon class="inline-block w-4 h-4 mr-1" />
+                        <span class="text-xs">
+                          {{
+                            new Date(bookmark.created_at).toLocaleDateString('en-US', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            })
+                          }}
+                        </span>
+                      </div>
+                      <div class="flex items-center space-x-2">
+                        <button
+                          @click="openEditModal(bookmark)"
+                          class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+                        >
+                          <PencilIcon class="h-4 w-4" />
+                        </button>
+                        <button
+                          @click="deleteBookmark(bookmark.id)"
+                          class="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+                        >
+                          <TrashIcon class="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -237,68 +258,87 @@
                   :href="bookmark.url"
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="w-28 flex-shrink-0 hover:opacity-90 transition-opacity relative group"
+                  class="w-28 h-24 flex-shrink-0 hover:opacity-90 transition-opacity relative group"
                 >
                   <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
                   <img
                     v-if="bookmark.thumbnail_url"
                     :src="bookmark.thumbnail_url"
                     :alt="bookmark.title"
-                    class="w-full h-20 object-cover"
+                    class="w-full h-full object-cover"
                     @error="handleImageError"
                   />
-                  <div v-else class="w-full h-20 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <div v-else class="w-auto h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                     <DocumentIcon class="h-6 w-6 text-gray-400 dark:text-gray-500" />
                   </div>
                 </a>
 
                 <!-- Content -->
-                <div class="flex-1 p-2">
-                  <div class="flex justify-between items-start">
-                    <a
-                      :href="bookmark.url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-base font-semibold mb-0.5 line-clamp-1 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      {{ bookmark.title || 'Untitled' }}
-                    </a>
-                    <div class="flex space-x-1 ml-2">
-                      <button
-                        @click="openEditModal(bookmark)"
-                        class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
-                      >
-                        <PencilIcon class="h-4 w-4" />
-                      </button>
-                      <button
-                        @click="deleteBookmark(bookmark.id)"
-                        class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                      >
-                        <TrashIcon class="h-4 w-4" />
-                      </button>
+                <div class="flex-1 p-2 flex flex-col justify-between">
+                  <div>
+                    <div class="flex justify-between items-start">
+                      <p class="line-clamp-1">
+                        <a
+                          :href="bookmark.url"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="block text-base font-semibold mb-0.5 text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        >
+                          {{ bookmark.title || 'Untitled' }}
+                        </a>
+                      </p>
+                      <div class="flex space-x-1 ml-2">
+                        <button
+                          @click="openEditModal(bookmark)"
+                          class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
+                        >
+                          <PencilIcon class="h-4 w-4" />
+                        </button>
+                        <button
+                          @click="deleteBookmark(bookmark.id)"
+                          class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                        >
+                          <TrashIcon class="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-xs mb-1 line-clamp-1">
+                      {{ bookmark.description || 'No description available' }}
+                    </p>
                   </div>
 
-                  <p class="text-gray-600 dark:text-gray-400 text-xs mb-1 line-clamp-2">
-                    {{ bookmark.description || 'No description available' }}
-                  </p>
                   <!-- Tags -->
-                  <div class="flex flex-wrap items-center gap-1">
-                    <span
-                      v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
-                      :key="tag.id"
-                      class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs"
-                      :style="{
-                        backgroundColor: `${tag.color || '#94a3b8'}16`,
-                        color: tag.color || '#64748b'
-                      }"
-                    >
+                  <div class="flex flex-wrap items-center gap-1 justify-between">
+                    <div>
                       <span
-                        class="w-1 h-1 rounded-full mr-1"
-                        :style="{ backgroundColor: tag.color || '#94a3b8' }"
-                      ></span>
-                      {{ tag.name }}
-                    </span>
+                        v-for="tag in bookmark.tags.sort((a: Tag, b: Tag) => a.name.localeCompare(b.name))"
+                        :key="tag.id"
+                        class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs"
+                        :style="{
+                          backgroundColor: `${tag.color || '#94a3b8'}16`,
+                          color: tag.color || '#64748b'
+                        }"
+                      >
+                        <span
+                          class="w-1 h-1 rounded-full mr-1"
+                          :style="{ backgroundColor: tag.color || '#94a3b8' }"
+                        ></span>
+                        {{ tag.name }}
+                      </span>
+                    </div>
+
+                    <div class="text-gray-500">
+                      <CalendarIcon class="inline-block w-4 h-4 mr-1" />
+                      <span class="text-xs">
+                        {{
+                          new Date(bookmark.created_at).toLocaleDateString('en-US', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })
+                        }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -426,7 +466,8 @@ import {
   TrashIcon,
   Squares2X2Icon as ViewGridIcon,
   ListBulletIcon as ViewListIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  CalendarIcon
 } from '@heroicons/vue/24/outline'
 import MobileNav from '../shared/MobileNav.vue'
 import ThemeToggle from '../shared/ThemeToggle.vue'
@@ -465,7 +506,7 @@ const availableTags = ref<any[]>([])
 const isShowingUntagged = ref(false)
 const currentSort = ref({
   field: 'date',
-  direction: 'desc'
+  direction: 'asc'
 })
 const errorMessage = ref('')
 const layout = ref('list')
@@ -714,6 +755,7 @@ const fetchTags = () => {
 
 onMounted(async () => {
   await Promise.all([fetchData(), fetchTags()])
+  sortBookmarks('date')
 })
 </script>
 
