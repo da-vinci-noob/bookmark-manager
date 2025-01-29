@@ -1,8 +1,9 @@
 GIT
   remote: https://github.com/ruby/net-smtp.git
-  revision: 53482b817f7c0be2d9bce4eae088c019f7ee0ac3
+  revision: afaa2985504eaad7bfe522665c751aaf9415896e
   specs:
     net-smtp (0.5.0)
+      net-protocol
 
 GEM
   remote: https://rubygems.org/
