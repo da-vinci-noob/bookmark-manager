@@ -3,6 +3,7 @@ GIT
   revision: 53482b817f7c0be2d9bce4eae088c019f7ee0ac3
   specs:
     net-smtp (0.5.0)
+      net-protocol
 
 GEM
   remote: https://rubygems.org/
@@ -195,7 +196,7 @@ GEM
     psych (5.2.2)
       date
       stringio
-    puma (6.5.0)
+    puma (6.6.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
