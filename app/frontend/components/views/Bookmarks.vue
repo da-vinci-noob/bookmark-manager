@@ -532,6 +532,7 @@ const searchFilteredBookmarks = computed(() => {
     (bookmark) =>
       bookmark.title?.toLowerCase().includes(query) ||
       bookmark.description?.toLowerCase().includes(query) ||
+      bookmark.url?.toLowerCase().includes(query) ||
       bookmark.tags?.some((tag) => tag.name.toLowerCase().includes(query))
   )
 })
@@ -610,7 +611,19 @@ const submitBookmark = async () => {
       throw new Error(data.error || 'Failed to save bookmark')
     }
 
-    await fetchData()
+    const savedBookmark = await response.json()
+    
+    if (isEditing.value) {
+      // Update existing bookmark
+      const index = bookmarks.value.findIndex((b) => b.id === savedBookmark.id)
+      if (index !== -1) {
+        bookmarks.value[index] = savedBookmark
+      }
+    } else {
+      // Add new bookmark
+      bookmarks.value.unshift(savedBookmark)
+    }
+
     closeModal()
   } catch (err) {
     errorMessage.value = err.message || 'An error occurred while saving the bookmark'
@@ -651,7 +664,7 @@ const deleteBookmark = async (id: number) => {
       throw new Error(data.error || 'Failed to delete bookmark')
     }
 
-    await fetchData()
+    bookmarks.value = bookmarks.value.filter((bookmark) => bookmark.id !== id)
   } catch (err) {
     errorMessage.value = err.message || 'An error occurred while deleting the bookmark'
   }
