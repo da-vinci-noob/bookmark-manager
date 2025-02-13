@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_28_163913) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_14_203010) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "bookmark_tags", force: :cascade do |t|
@@ -25,23 +26,15 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_28_163913) do
   end
 
   create_table "bookmarks", force: :cascade do |t|
-    t.string "url", null: false
+    t.citext "url", null: false
     t.string "title", null: false
     t.text "description"
     t.string "thumbnail_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["url"], name: "index_bookmarks_on_url"
+    t.index ["url", "user_id"], name: "index_bookmarks_on_url_and_user_id", unique: true
     t.index ["user_id"], name: "index_bookmarks_on_user_id"
-  end
-
-  create_table "bookmarks_tags", id: false, force: :cascade do |t|
-    t.bigint "bookmark_id"
-    t.bigint "tag_id"
-    t.index ["bookmark_id", "tag_id"], name: "index_bookmarks_tags_on_bookmark_id_and_tag_id", unique: true
-    t.index ["bookmark_id"], name: "index_bookmarks_tags_on_bookmark_id"
-    t.index ["tag_id"], name: "index_bookmarks_tags_on_tag_id"
   end
 
   create_table "tags", force: :cascade do |t|
