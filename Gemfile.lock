@@ -3,6 +3,7 @@ GIT
   revision: 53482b817f7c0be2d9bce4eae088c019f7ee0ac3
   specs:
     net-smtp (0.5.0)
+      net-protocol
 
 GEM
   remote: https://rubygems.org/
@@ -305,11 +306,11 @@ GEM
     tailwindcss-ruby (3.4.17-x86_64-darwin)
     tailwindcss-ruby (3.4.17-x86_64-linux)
     thor (1.3.2)
-    thruster (0.1.9)
-    thruster (0.1.9-aarch64-linux)
-    thruster (0.1.9-arm64-darwin)
-    thruster (0.1.9-x86_64-darwin)
-    thruster (0.1.9-x86_64-linux)
+    thruster (0.1.12)
+    thruster (0.1.12-aarch64-linux)
+    thruster (0.1.12-arm64-darwin)
+    thruster (0.1.12-x86_64-darwin)
+    thruster (0.1.12-x86_64-linux)
     timeout (0.4.3)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
