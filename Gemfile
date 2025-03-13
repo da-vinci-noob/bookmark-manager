@@ -9,7 +9,7 @@ gem 'pg', '~> 1.1'
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem 'tailwindcss-rails'
+gem 'tailwindcss-rails', '~> 3.3', '>= 3.3.1'
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem 'jbuilder'
 
@@ -52,7 +52,7 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-packaging', require: false
+  gem 'rubocop-packaging', git: 'https://github.com/utkarsh2102/rubocop-packaging', require: false
 end
 
 group :development do

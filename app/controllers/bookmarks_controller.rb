@@ -90,6 +90,6 @@ class BookmarksController < ApplicationController
   end
 
   def bookmark_params
-    params.require(:bookmark).permit(:url, :title, :description, :thumbnail_url, tag_ids: [])
+    params.expect(bookmark: [:url, :title, :description, :thumbnail_url, { tag_ids: [] }])
   end
 end

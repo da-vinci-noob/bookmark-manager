@@ -4,7 +4,7 @@
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
 
-require:
+plugins:
   - rubocop-packaging
   - rubocop-performance
   - rubocop-rails

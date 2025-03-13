@@ -47,7 +47,7 @@ Password: demo@test.com
 ## Tech Stack
 
 ### Backend
-- Ruby on Rails 7
+- Ruby on Rails 8
 - PostgreSQL database
 
 ### Frontend
