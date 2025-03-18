@@ -5,9 +5,11 @@ class LinkPreviewService
   class PreviewFetchError < Error; end
   class PreviewParseError < Error; end
 
-  LINK_PREVIEW_API_KEY = ENV.fetch('LINK_PREVIEW_API_KEY')
+  LINK_PREVIEW_API_KEY = ENV.fetch('LINK_PREVIEW_API_KEY', nil)
 
   def self.fetch_thumbnail(url)
+    return {} unless LINK_PREVIEW_API_KEY
+
     new.fetch_thumbnail(url)
   end
 
