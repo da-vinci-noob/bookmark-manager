@@ -8,6 +8,9 @@ require:
   - rubocop-packaging
   - rubocop-performance
   - rubocop-rails
+  - rubocop-factory_bot
+  - rubocop-rspec
+  - rubocop-rspec_rails
 
 AllCops:
   TargetRubyVersion: 3.3
@@ -385,6 +388,14 @@ Rails/IndexWith:
   Enabled: true
 
 ### Rails Cops End
+
+### Rspec Cops Start
+
+RSpec/MultipleExpectations:
+  Enabled: true
+  Max: 3
+
+### Rspec Cops End
 
 ### Styles Cops Start
 

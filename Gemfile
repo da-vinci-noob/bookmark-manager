@@ -52,7 +52,10 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-performance', require: false
-  gem 'rubocop-packaging', require: false
+  gem 'rubocop-packaging', git: 'https://github.com/utkarsh2102/rubocop-packaging', require: false
+  gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
 end
 
 group :development do
@@ -60,4 +63,12 @@ group :development do
   gem 'web-console'
 end
 
+group :test do
+  gem 'rspec-rails', '~> 7.0.0'
+  gem 'factory_bot_rails'
+  gem 'shoulda-matchers'
+  gem 'rspec-github', require: false
+end
+
+gem 'net-smtp', github: 'ruby/net-smtp'
 gem 'vite_rails', '~> 3.0', '>= 3.0.19'
