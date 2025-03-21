@@ -26,8 +26,6 @@ class LinkPreviewService
   def validate_url(url)
     uri = URI.parse(url)
     raise ArgumentError, 'Invalid URL' unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
-  rescue URI::InvalidURIError
-    raise ArgumentError, 'Invalid URL format'
   end
 
   def handle_preview_response(response)

@@ -68,6 +68,8 @@ group :test do
   gem 'factory_bot_rails'
   gem 'shoulda-matchers'
   gem 'rspec-github', require: false
+  gem 'simplecov', require: false
+  gem 'webmock'
 end
 
 gem 'net-smtp', github: 'ruby/net-smtp'

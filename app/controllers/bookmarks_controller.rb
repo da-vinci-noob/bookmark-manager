@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class BookmarksController < ApplicationController
-  before_action :set_bookmark, only: %i[show update destroy]
+  before_action :set_bookmark, only: %i[update destroy]
 
   def index
     @bookmarks = current_user.bookmarks.includes(:tags)
@@ -13,10 +13,6 @@ class BookmarksController < ApplicationController
         render json: { bookmarks: @bookmarks.as_json(include: :tags), tags: @tags.as_json }
       end
     end
-  end
-
-  def show
-    render json: @bookmark, include: :tags
   end
 
   def create

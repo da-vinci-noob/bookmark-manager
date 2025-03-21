@@ -33,8 +33,11 @@ class TagsController < ApplicationController
   end
 
   def destroy
-    @tag.destroy
-    head :no_content
+    if @tag.destroy
+      head :no_content
+    else
+      render_error('Failed to delete tag')
+    end
   end
 
   private

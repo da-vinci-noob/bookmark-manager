@@ -82,7 +82,7 @@ RSpec.describe Bookmark do
       end
     end
 
-    describe 'associations' do
+    context 'with associations' do
       it 'includes tags and bookmark_tags associations' do
         expect(described_class.reflect_on_all_associations(:has_many).map(&:class_name)).to include('Tag', 'BookmarkTag')
       end
