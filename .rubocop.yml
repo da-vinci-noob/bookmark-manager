@@ -395,6 +395,9 @@ RSpec/MultipleExpectations:
   Enabled: true
   Max: 3
 
+RSpec/AnyInstance:
+  Enabled: false
+
 ### Rspec Cops End
 
 ### Styles Cops Start

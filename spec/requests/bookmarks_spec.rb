@@ -88,7 +88,6 @@ RSpec.describe 'Bookmarks' do
   describe 'PUT /update' do
     let(:bookmark) { create(:bookmark, user: user) }
     let(:tag) { create(:tag, user: user) }
-    let(:other_user_bookmark) { create(:bookmark, user: create(:user)) }
     let(:valid_attributes) { { bookmark: { title: 'Updated Title', description: 'Updated description', tag_ids: [tag.id] } } }
     let(:url_update_attributes) { { bookmark: { url: 'https://updated-example.com', title: 'Updated with URL' } } }
 
@@ -163,6 +162,7 @@ RSpec.describe 'Bookmarks' do
 
     context 'when bookmark does not belong to user' do
       it 'returns 404 not found' do
+        other_user_bookmark = create(:bookmark, user: create(:user))
         put bookmark_path(other_user_bookmark), params: valid_attributes, headers: headers
         expect(response).to have_http_status(:not_found)
       end
@@ -225,10 +225,8 @@ RSpec.describe 'Bookmarks' do
         stub_request(:get, mock_url).with(headers: mock_headers).to_return(status: 200, body: mock_response.to_json)
 
         get fetch_thumbnail_bookmarks_path, params: { url: 'https://example.com' }, headers: headers
-        json_response = response.parsed_body
-        expect(json_response['title']).to eq('Example Title')
-        expect(json_response['description']).to eq('Example Description')
-        expect(json_response['thumbnail_url']).to eq('https://example.com/image.jpg')
+        expected_response = response.parsed_body.values_at('title', 'description', 'thumbnail_url')
+        expect(expected_response).to eq(mock_response.values)
       end
     end
 

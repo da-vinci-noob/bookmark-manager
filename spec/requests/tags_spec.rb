@@ -117,34 +117,31 @@ RSpec.describe 'Tags' do
   end
 
   describe 'DELETE /destroy' do
-    before do
-      @tag = create(:tag, user: user)
-    end
+    let(:tag) { create(:tag, user: user) }
 
     it 'destroys the requested tag' do
+      tag.reload
       expect do
-        delete tag_path(@tag), headers: headers
+        delete tag_path(tag), headers: headers
       end.to change(Tag, :count).by(-1)
     end
 
     it 'returns a no content response' do
-      delete tag_path(@tag), headers: headers
+      delete tag_path(tag), headers: headers
       expect(response).to have_http_status(:no_content)
     end
 
-    context 'when bookmark does not belong to user' do
-      before do
-        @other_user_tag = create(:tag, user: create(:user))
-      end
+    context 'when tag does not belong to user' do
+      let(:other_user_tag) { create(:tag, user: create(:user)) }
 
       it 'returns 404 not found' do
-        delete tag_path(@other_user_tag), headers: headers
+        delete tag_path(other_user_tag), headers: headers
         expect(response).to have_http_status(:not_found)
       end
 
       it 'does errors while destroying the tag' do
         allow_any_instance_of(Tag).to receive(:destroy).and_return(false)
-        delete tag_path(@tag), headers: headers
+        delete tag_path(tag), headers: headers
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end

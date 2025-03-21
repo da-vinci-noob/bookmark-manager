@@ -13,10 +13,8 @@ RSpec.describe 'Home' do
     it 'returns a successful response without data' do
       get root_path
       data = response.parsed_body.css('#home[data-bookmarks]').first
-      bookmarks = JSON.parse(data['data-bookmarks'])
-      tags = JSON.parse(data['data-tags'])
 
-      expect([bookmarks.count, tags.count]).to eq([0, 0])
+      expect([JSON.parse(data['data-bookmarks']).count, JSON.parse(data['data-tags']).count]).to eq([0, 0])
     end
 
     it 'returns a successful response with data' do
@@ -25,10 +23,7 @@ RSpec.describe 'Home' do
       get root_path
       data = response.parsed_body.css('#home[data-bookmarks]').first
 
-      bookmarks = JSON.parse(data['data-bookmarks'])
-      tags = JSON.parse(data['data-tags'])
-
-      expect([bookmarks.count, tags.count]).to eq([3, 2])
+      expect([JSON.parse(data['data-bookmarks']).count, JSON.parse(data['data-tags']).count]).to eq([3, 2])
     end
   end
 end
