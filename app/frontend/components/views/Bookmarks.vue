@@ -346,6 +346,40 @@
           </div>
         </div>
 
+        <!-- Pagination Controls -->
+        <div class="flex justify-between items-center mt-8">
+          <div class="flex items-center space-x-2">
+            <label for="per-page" class="text-sm text-gray-600 dark:text-gray-400">Show:</label>
+            <select
+              id="per-page"
+              v-model="perPage"
+              class="border border-gray-300 dark:border-gray-600 rounded py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              @change="handlePerPageChange"
+            >
+              <option v-for="n in [12, 24, 36, 48]" :key="n" :value="n">{{ n }}</option>
+            </select>
+            <span class="text-sm text-gray-600 dark:text-gray-400">per page</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button
+              @click="changePage(currentPage - 1)"
+              :disabled="currentPage === 1"
+              class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Previous
+            </button>
+            <span class="text-sm text-gray-600 dark:text-gray-400"> Page {{ currentPage }} of {{ totalPages }} </span>
+            <button
+              @click="changePage(currentPage + 1)"
+              :disabled="currentPage === totalPages"
+              class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+
         <!-- Modal -->
         <TransitionRoot appear :show="showModal" as="template">
           <Dialog as="div" @close="closeModal" class="relative z-10">
@@ -493,6 +527,10 @@ const bookmarks = ref<any[]>([])
 const showModal = ref(false)
 const isEditing = ref(false)
 const searchQuery = ref('')
+const currentPage = ref(1)
+const perPage = ref(12)
+const totalPages = ref(1)
+const totalCount = ref(0)
 const selectedTags = ref<number[]>([])
 const currentBookmark = ref<Bookmark>({
   url: '',
@@ -541,7 +579,7 @@ const displayedBookmarks = computed(() => {
   return searchFilteredBookmarks.value
 })
 
-const totalBookmarks = computed(() => bookmarks.value.length)
+const totalBookmarks = computed(() => totalCount.value)
 
 const getBookmarkCountByTag = (tagId: number) => {
   if (!Array.isArray(bookmarks.value)) return 0
@@ -612,7 +650,7 @@ const submitBookmark = async () => {
     }
 
     const savedBookmark = await response.json()
-    
+
     if (isEditing.value) {
       // Update existing bookmark
       const index = bookmarks.value.findIndex((b) => b.id === savedBookmark.id)
@@ -724,29 +762,14 @@ const getSortIndicator = (field: string) => {
 
 const fetchData = async () => {
   try {
-    errorMessage.value = ''
-    const params: Record<string, any> = {}
-
-    if (searchQuery.value) {
-      params.query = searchQuery.value
-    }
-
-    if (isShowingUntagged.value) {
-      params.untagged = 'true'
-    } else if (selectedTags.value.length > 0) {
-      params.tag_ids = selectedTags.value.join(',')
-    }
-
-    const response = await fetch(`/bookmarks.json?${new URLSearchParams(params)}`, {
-      headers: {
-        Accept: 'application/json'
-      }
-    })
+    const response = await fetch(`/bookmarks.json?page=${currentPage.value}&per_page=${perPage.value}`)
     if (!response.ok) throw new Error('Failed to fetch bookmarks')
 
     const data = await response.json()
     bookmarks.value = data.bookmarks || []
-    availableTags.value = data.tags || []
+    totalPages.value = data.pagination.total_pages
+    totalCount.value = data.pagination.total_count
+    currentPage.value = data.pagination.current_page
   } catch (err) {
     errorMessage.value = err.message || 'An error occurred while fetching bookmarks'
   }
@@ -755,15 +778,27 @@ const fetchData = async () => {
 const fetchTags = () => {
   try {
     errorMessage.value = ''
-    const tagsElement = document.getElementById('tags')
+    const tagsElement = document.getElementById('bookmarks')
     if (tagsElement) {
       // Get Tags from data attribute
-      const tagsData = tagsElement.dataset.bookmarks
+      const tagsData = tagsElement.dataset.tags
       availableTags.value = tagsData ? JSON.parse(tagsData) : []
     }
   } catch (err) {
     errorMessage.value = err.message || 'An error occurred while fetching tags'
   }
+}
+
+const changePage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    fetchData()
+  }
+}
+
+const handlePerPageChange = () => {
+  currentPage.value = 1 // Reset to first page when changing items per page
+  fetchData()
 }
 
 onMounted(async () => {

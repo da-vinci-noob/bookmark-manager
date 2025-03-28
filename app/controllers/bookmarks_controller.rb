@@ -4,13 +4,13 @@ class BookmarksController < ApplicationController
   before_action :set_bookmark, only: %i[update destroy]
 
   def index
-    @bookmarks = current_user.bookmarks.includes(:tags)
+    @bookmarks = paginate_bookmarks(current_user.bookmarks)
     @tags = current_user.tags
 
     respond_to do |format|
-      format.html # renders index.html.erb
+      format.html
       format.json do
-        render json: { bookmarks: @bookmarks.as_json(include: :tags), tags: @tags.as_json }
+        render json: build_bookmarks_json(page, per_page)
       end
     end
   end
@@ -83,6 +83,38 @@ class BookmarksController < ApplicationController
     else
       render_error(@bookmark.errors.full_messages.join(', '))
     end
+  end
+
+  def paginate_bookmarks(scope)
+    @page = [params[:page].to_i, 1].max # Ensure page is at least 1
+    @total_count = scope.count
+    @per_page = [params[:per_page].to_i, 12].max
+    scope.offset((@page - 1) * @per_page).limit(@per_page)
+  end
+
+  def page
+    @page ||= 1
+  end
+
+  def per_page
+    @per_page ||= 12
+  end
+
+  def total_count
+    @total_count ||= @bookmarks.count
+  end
+
+  def build_bookmarks_json(page, per_page)
+    {
+      bookmarks:  @bookmarks.as_json(include: :tags),
+      tags:       current_user.tags.as_json,
+      pagination: {
+        total_count:  @total_count,
+        total_pages:  (@total_count.to_f / per_page).ceil,
+        current_page: page,
+        per_page:     per_page
+      }
+    }
   end
 
   def bookmark_params
