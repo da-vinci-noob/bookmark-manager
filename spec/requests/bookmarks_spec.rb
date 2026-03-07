@@ -77,7 +77,7 @@ RSpec.describe 'Bookmarks' do
 
       it 'returns a JSON response with errors' do
         post bookmarks_path, params: invalid_attributes, headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json_response = response.parsed_body
         expect(json_response).to have_key('error')
@@ -153,7 +153,7 @@ RSpec.describe 'Bookmarks' do
         invalid_attributes = { bookmark: { title: '', url: 'invalid-url' } }
 
         put bookmark_path(bookmark), params: invalid_attributes, headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json_response = response.parsed_body
         expect(json_response).to have_key('error')
@@ -195,7 +195,7 @@ RSpec.describe 'Bookmarks' do
       it 'does errors while destroying the bookmark' do
         allow_any_instance_of(Bookmark).to receive(:destroy).and_return(false)
         delete bookmark_path(bookmark), headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -266,7 +266,7 @@ RSpec.describe 'Bookmarks' do
         stub_request(:get, mock_url).with(headers: mock_headers).to_return(status: 200, body: 'wewe')
 
         get fetch_thumbnail_bookmarks_path, params: { url: 'https://example.com' }, headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json_response = response.parsed_body
         expect(json_response['error']).to eq('Failed to parse preview data')

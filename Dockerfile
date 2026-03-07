@@ -9,6 +9,7 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.1
+FROM oven/bun:1.2.5 AS bun
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -32,11 +33,10 @@ FROM base AS build
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config curl && \
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update -qq && \
-    apt-get install -y nodejs yarn && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -45,8 +45,8 @@ RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Install npm packages
-COPY package.json yarn.lock ./
-RUN yarn install
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
 
 # Copy application code
 COPY . .

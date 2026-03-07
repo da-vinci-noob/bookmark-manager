@@ -43,6 +43,8 @@ Password: demo@test.com
 - Dark/Light theme support
 - Fast and efficient bookmark management
 - Secure authentication system
+- Import browser bookmarks from HTML files with duplicate skipping
+- Export your bookmarks in HTML and CSV formats
 
 ## Tech Stack
 
@@ -58,7 +60,7 @@ Password: demo@test.com
 ## Prerequisites
 
 - Ruby
-- Node.js and Yarn
+- Bun
 - PostgreSQL
 
 ## Initial Setup
@@ -93,7 +95,7 @@ cd bookmark-manager
 2. Install dependencies:
 ```bash
 bundle install
-yarn install
+bun install
 ```
 
 3. Setup database:

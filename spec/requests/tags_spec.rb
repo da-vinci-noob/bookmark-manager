@@ -66,7 +66,7 @@ RSpec.describe 'Tags' do
 
       it 'returns a JSON response with errors' do
         post tags_path, params: invalid_attributes, headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json_response = response.parsed_body
         expect(json_response).to have_key('error')
@@ -99,7 +99,7 @@ RSpec.describe 'Tags' do
     context 'with invalid parameters' do
       it 'returns a JSON response with errors' do
         put tag_path(tag), params: invalid_attributes, headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json_response = response.parsed_body
         expect(json_response).to have_key('error')
@@ -142,7 +142,7 @@ RSpec.describe 'Tags' do
       it 'does errors while destroying the tag' do
         allow_any_instance_of(Tag).to receive(:destroy).and_return(false)
         delete tag_path(tag), headers: headers
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
