@@ -252,6 +252,16 @@ Note: LinkPreview.net offers a free tier suitable for personal use, which includ
 - Vue.js components are located in `app/frontend/components`
 - Database configuration is in `config/database.yml`
 
+## Bookmark Import/Export
+
+- Export HTML: `GET /bookmarks/export.html`
+- Export CSV: `GET /bookmarks/export.csv`
+- Import HTML: `POST /bookmarks/import` with multipart form field `file`
+
+Import behavior:
+- Deduplicates on `(user_id, url)` and preserves existing bookmarks
+- Attempts to map bookmark folder names to tags
+
 ## Contributing
 
 1. Fork the repository

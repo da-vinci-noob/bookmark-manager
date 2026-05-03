@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :bookmarks, only: %i[index create update destroy] do
     collection do
       get 'fetch_thumbnail'
+      get 'export'
+      post 'import'
     end
   end
 

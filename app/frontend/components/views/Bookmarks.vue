@@ -109,6 +109,7 @@
           <div class="mb-4 sm:mb-0">
             <h1 class="text-2xl font-bold dark:text-white">Bookmarks</h1>
             <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
+            <p v-if="successMessage" class="text-green-600 text-sm mt-2">{{ successMessage }}</p>
           </div>
           <div class="flex items-center space-x-4 w-full sm:w-auto">
             <!-- Search Input -->
@@ -143,14 +144,45 @@
                 <ViewListIcon class="h-5 w-5 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
-            <button
-              @click="(showModal = true), (isEditing = false)"
-              class="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 dark:hover:bg-blue-600"
-            >
-              Add Bookmark
-            </button>
+            <div class="flex items-center space-x-2">
+              <a
+                href="/bookmarks/export.html"
+                class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Export HTML
+              </a>
+              <a
+                href="/bookmarks/export.csv"
+                class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Export CSV
+              </a>
+              <button
+                @click="triggerImportPicker"
+                class="px-3 py-2 rounded border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Choose Import File
+              </button>
+              <button
+                @click="importBookmarks"
+                :disabled="!selectedImportFile || importInProgress"
+                class="px-3 py-2 rounded text-sm text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ importInProgress ? 'Importing...' : 'Import HTML' }}
+              </button>
+              <input ref="importFileInput" type="file" accept=".html,.htm,text/html" class="hidden" @change="handleImportFileChange" />
+              <button
+                @click="(showModal = true), (isEditing = false)"
+                class="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 dark:hover:bg-blue-600"
+              >
+                Add Bookmark
+              </button>
+            </div>
           </div>
         </div>
+        <p v-if="selectedImportFile" class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          Selected import file: {{ selectedImportFile.name }}
+        </p>
 
         <!-- Bookmarks Grid/List -->
         <div class="mt-8">
@@ -492,7 +524,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import {
   DocumentIcon,
@@ -547,8 +579,12 @@ const currentSort = ref({
   direction: 'asc'
 })
 const errorMessage = ref('')
+const successMessage = ref('')
 const layout = ref('list')
 const showMobileFilters = ref(false)
+const importInProgress = ref(false)
+const selectedImportFile = ref<File | null>(null)
+const importFileInput = ref<HTMLInputElement | null>(null)
 
 const filteredBookmarks = computed(() => {
   let result = [...bookmarks.value]
@@ -617,6 +653,7 @@ const closeModal = () => {
 const submitBookmark = async () => {
   try {
     errorMessage.value = ''
+    successMessage.value = ''
     const bookmarkData = {
       bookmark: {
         url: currentBookmark.value.url,
@@ -671,6 +708,7 @@ const submitBookmark = async () => {
 const fetchThumbnail = async () => {
   try {
     errorMessage.value = ''
+    successMessage.value = ''
     if (!currentBookmark.value.url) return
 
     const response = await fetch(`/bookmarks/fetch_thumbnail?url=${encodeURIComponent(currentBookmark.value.url)}`)
@@ -688,6 +726,7 @@ const fetchThumbnail = async () => {
 const deleteBookmark = async (id: number) => {
   try {
     errorMessage.value = ''
+    successMessage.value = ''
     if (!confirm('Are you sure you want to delete this bookmark?')) return
 
     const response = await fetch(`/bookmarks/${id}`, {
@@ -758,6 +797,48 @@ const sortBookmarks = (sortBy: string) => {
 const getSortIndicator = (field: string) => {
   if (currentSort.value.field !== field) return ''
   return currentSort.value.direction === 'asc' ? '↑' : '↓'
+}
+
+const triggerImportPicker = () => {
+  importFileInput.value?.click()
+}
+
+const handleImportFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  selectedImportFile.value = target.files?.[0] || null
+}
+
+const importBookmarks = async () => {
+  if (!selectedImportFile.value) return
+
+  try {
+    importInProgress.value = true
+    errorMessage.value = ''
+    successMessage.value = ''
+
+    const formData = new FormData()
+    formData.append('file', selectedImportFile.value)
+
+    const response = await fetch('/bookmarks/import', {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content || ''
+      },
+      body: formData
+    })
+
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error || 'Failed to import bookmarks')
+
+    successMessage.value = `Import complete: ${data.imported} added, ${data.duplicates} duplicates, ${data.invalid} invalid`
+    selectedImportFile.value = null
+    if (importFileInput.value) importFileInput.value.value = ''
+    await Promise.all([fetchData(), Promise.resolve(fetchTags())])
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : 'An error occurred while importing bookmarks'
+  } finally {
+    importInProgress.value = false
+  }
 }
 
 const fetchData = async () => {

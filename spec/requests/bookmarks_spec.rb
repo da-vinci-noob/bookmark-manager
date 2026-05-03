@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'csv'
+require 'tempfile'
 
 RSpec.describe 'Bookmarks' do
   let(:user) { create(:user) }
@@ -115,6 +117,7 @@ RSpec.describe 'Bookmarks' do
 
         expect(bookmark.tags).to include(tag)
       end
+
     end
 
     context 'when updating URL' do
@@ -292,6 +295,82 @@ RSpec.describe 'Bookmarks' do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body).to eq({})
       end
+    end
+  end
+
+  describe 'GET /export' do
+    let!(:bookmark) { create(:bookmark, user:, title: 'Rails', url: 'https://rubyonrails.org') }
+    let!(:tag) { create(:tag, user:, name: 'Framework') }
+
+    before do
+      bookmark.tags << tag
+    end
+
+    it 'exports bookmarks as HTML' do
+      get '/bookmarks/export.html'
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['Content-Type']).to include('text/html')
+      expect(response.body).to include('NETSCAPE-Bookmark-file-1')
+      expect(response.body).to include('https://rubyonrails.org')
+      expect(response.body).to include('Framework')
+    end
+
+    it 'exports bookmarks as CSV' do
+      get '/bookmarks/export.csv'
+
+      expect(response).to have_http_status(:ok)
+      expect(response.headers['Content-Type']).to include('text/csv')
+      rows = CSV.parse(response.body, headers: true)
+      expect(rows.length).to eq(1)
+      expect(rows.first['url']).to eq('https://rubyonrails.org')
+      expect(rows.first['tags']).to eq('Framework')
+    end
+  end
+
+  describe 'POST /import' do
+    let!(:existing_bookmark) { create(:bookmark, user:, url: 'https://existing.example.com', title: 'Existing') }
+    let(:import_html) do
+      <<~HTML
+        <!DOCTYPE NETSCAPE-Bookmark-file-1>
+        <DL><p>
+          <DT><H3>Dev</H3>
+          <DL><p>
+            <DT><A HREF="https://existing.example.com">Existing duplicate</A>
+            <DT><A HREF="https://new.example.com">New Bookmark</A>
+          </DL><p>
+          <DT><A HREF="">Invalid</A>
+        </DL><p>
+      HTML
+    end
+
+    let(:uploaded_file) do
+      tempfile = Tempfile.new(['bookmarks', '.html'])
+      tempfile.write(import_html)
+      tempfile.rewind
+      Rack::Test::UploadedFile.new(tempfile.path, 'text/html')
+    end
+
+    it 'imports new bookmarks, skips duplicates, and maps folders to tags' do
+      expect do
+        post '/bookmarks/import', params: { file: uploaded_file }
+      end.to change(Bookmark, :count).by(1)
+
+      expect(response).to have_http_status(:ok)
+      payload = response.parsed_body
+      expect(payload['imported']).to eq(1)
+      expect(payload['duplicates']).to eq(1)
+      expect(payload['invalid']).to eq(1)
+
+      imported = user.bookmarks.find_by(url: 'https://new.example.com')
+      expect(imported).to be_present
+      expect(imported.tags.pluck(:name)).to include('Dev')
+    end
+
+    it 'returns bad request when file is missing' do
+      post '/bookmarks/import'
+      expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body['error']).to eq('HTML file is required')
     end
   end
 end

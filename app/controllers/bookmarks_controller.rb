@@ -50,6 +50,36 @@ class BookmarksController < ApplicationController
     render_error(e.message, :internal_server_error)
   end
 
+  def export
+    bookmarks = current_user.bookmarks.includes(:tags).order(created_at: :desc)
+
+    respond_to do |format|
+      format.html do
+        html = BookmarkExportHtmlService.new(bookmarks:).call
+        send_data html,
+                  filename: "bookmarks-#{Date.current}.html",
+                  type: 'text/html; charset=utf-8'
+      end
+      format.csv do
+        csv = BookmarkExportCsvService.new(bookmarks:).call
+        send_data csv,
+                  filename: "bookmarks-#{Date.current}.csv",
+                  type: 'text/csv; charset=utf-8'
+      end
+    end
+  end
+
+  def import
+    file = params[:file]
+    return render_error('HTML file is required', :bad_request) if file.blank?
+
+    io = file.respond_to?(:tempfile) ? file.tempfile : file
+    result = BookmarkImportHtmlService.new(user: current_user, io:).call
+    render json: { message: 'Import completed', **result }, status: :ok
+  rescue BookmarkImportHtmlService::ImportError => e
+    render_error(e.message, :unprocessable_entity)
+  end
+
   private
 
   def set_bookmark
