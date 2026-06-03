@@ -12,14 +12,9 @@ class BookmarkExportCsvService
       csv << %w[url title description tags created_at updated_at]
 
       @bookmarks.each do |bookmark|
-        csv << [
-          bookmark.url,
-          bookmark.title,
-          bookmark.description,
-          bookmark.tags.map(&:name).sort.join(', '),
-          bookmark.created_at.iso8601,
-          bookmark.updated_at.iso8601
-        ]
+        tags_array = bookmark.tags.map(&:name)
+        tags_array.sort!
+        csv << [bookmark.url, bookmark.title, bookmark.description, tags_array.join(', '), bookmark.created_at.iso8601, bookmark.updated_at.iso8601]
       end
     end
   end

@@ -9,15 +9,12 @@ class BookmarksController < ApplicationController
 
     respond_to do |format|
       format.html
-      format.json do
-        render json: build_bookmarks_json(page, per_page)
-      end
+      format.json { render json: build_bookmarks_json }
     end
   end
 
   def create
-    @bookmark = Bookmark.new(bookmark_params)
-    @bookmark.user = current_user
+    @bookmark = current_user.bookmarks.build(bookmark_params)
     bookmark_create(:created)
   end
 
@@ -27,19 +24,15 @@ class BookmarksController < ApplicationController
   end
 
   def destroy
-    if @bookmark.destroy
-      head :no_content
-    else
-      render_error('Failed to delete bookmark')
-    end
+    return head :no_content if @bookmark.destroy
+
+    render_error('Failed to delete bookmark')
   end
 
   def fetch_thumbnail
-    url = params[:url]
-    return render_error('URL is required', :bad_request) if url.blank?
+    return render_error('URL is required', :bad_request) if params[:url].blank?
 
-    thumbnail_data = LinkPreviewService.fetch_thumbnail(url)
-    render json: thumbnail_data
+    render json: LinkPreviewService.fetch_thumbnail(params[:url])
   rescue ArgumentError => e
     render_error(e.message, :bad_request)
   rescue LinkPreviewService::PreviewFetchError => e
@@ -52,20 +45,9 @@ class BookmarksController < ApplicationController
 
   def export
     bookmarks = current_user.bookmarks.includes(:tags).order(created_at: :desc)
-
     respond_to do |format|
-      format.html do
-        html = BookmarkExportHtmlService.new(bookmarks:).call
-        send_data html,
-                  filename: "bookmarks-#{Date.current}.html",
-                  type: 'text/html; charset=utf-8'
-      end
-      format.csv do
-        csv = BookmarkExportCsvService.new(bookmarks:).call
-        send_data csv,
-                  filename: "bookmarks-#{Date.current}.csv",
-                  type: 'text/csv; charset=utf-8'
-      end
+      format.html { send_export BookmarkExportHtmlService.new(bookmarks:).call, '.html', 'text/html' }
+      format.csv { send_export BookmarkExportCsvService.new(bookmarks:).call, '.csv', 'text/csv' }
     end
   end
 
@@ -74,13 +56,16 @@ class BookmarksController < ApplicationController
     return render_error('HTML file is required', :bad_request) if file.blank?
 
     io = file.respond_to?(:tempfile) ? file.tempfile : file
-    result = BookmarkImportHtmlService.new(user: current_user, io:).call
-    render json: { message: 'Import completed', **result }, status: :ok
+    render json: { message: 'Import completed', **BookmarkImportHtmlService.new(user: current_user, io:).call }
   rescue BookmarkImportHtmlService::ImportError => e
     render_error(e.message, :unprocessable_entity)
   end
 
   private
+
+  def send_export(data, ext, type)
+    send_data data, filename: "bookmarks-#{Date.current}#{ext}", type: "#{type}; charset=utf-8"
+  end
 
   def set_bookmark
     @bookmark = current_user.bookmarks.find(params[:id])
@@ -89,60 +74,39 @@ class BookmarksController < ApplicationController
   end
 
   def update_bookmark_attributes
-    if url_changed?
-      update_with_thumbnail
-    else
-      @bookmark.assign_attributes(bookmark_params)
-    end
+    url = bookmark_params[:url]
+    thumbnail = url.present? && url != @bookmark.url ? fetch_thumbnail_safe(url) : {}
+    @bookmark.assign_attributes(bookmark_params.merge(thumbnail))
   end
 
-  def url_changed?
-    bookmark_params[:url].present? && bookmark_params[:url] != @bookmark.url
-  end
-
-  def update_with_thumbnail
-    thumbnail_data = LinkPreviewService.fetch_thumbnail(bookmark_params[:url])
-    @bookmark.assign_attributes(bookmark_params.merge(thumbnail_data))
+  def fetch_thumbnail_safe(url)
+    LinkPreviewService.fetch_thumbnail(url)
   rescue StandardError
-    @bookmark.assign_attributes(bookmark_params)
+    {}
   end
 
   def bookmark_create(status)
-    if @bookmark.save
-      render(json: @bookmark, include: :tags, status:)
-    else
-      render_error(@bookmark.errors.full_messages.join(', '))
-    end
+    return render(json: @bookmark, include: :tags, status:) if @bookmark.save
+
+    render_error(@bookmark.errors.full_messages.join(', '))
   end
 
   def paginate_bookmarks(scope)
-    @page = [params[:page].to_i, 1].max # Ensure page is at least 1
+    @page = [params[:page].to_i, 1].max
     @total_count = scope.count
     @per_page = [params[:per_page].to_i, 12].max
     scope.offset((@page - 1) * @per_page).limit(@per_page)
   end
 
-  def page
-    @page ||= 1
-  end
-
-  def per_page
-    @per_page ||= 12
-  end
-
-  def total_count
-    @total_count ||= @bookmarks.count
-  end
-
-  def build_bookmarks_json(page, per_page)
+  def build_bookmarks_json
     {
       bookmarks:  @bookmarks.as_json(include: :tags),
       tags:       current_user.tags.as_json,
       pagination: {
         total_count:  @total_count,
-        total_pages:  (@total_count.to_f / per_page).ceil,
-        current_page: page,
-        per_page:     per_page
+        total_pages:  (@total_count.to_f / @per_page).ceil,
+        current_page: @page,
+        per_page:     @per_page
       }
     }
   end

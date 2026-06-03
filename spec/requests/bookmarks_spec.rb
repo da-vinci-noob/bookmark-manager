@@ -4,6 +4,7 @@ require 'rails_helper'
 require 'csv'
 require 'tempfile'
 
+# rubocop:disable RSpec/ExampleLength, RSpec/MultipleExpectations
 RSpec.describe 'Bookmarks' do
   let(:user) { create(:user) }
 
@@ -336,7 +337,8 @@ RSpec.describe 'Bookmarks' do
   end
 
   describe 'POST /import' do
-    let!(:existing_bookmark) { create(:bookmark, user:, url: 'https://existing.example.com', title: 'Existing') }
+    before { create(:bookmark, user:, url: 'https://existing.example.com', title: 'Existing') }
+
     let(:import_html) do
       <<~HTML
         <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -381,3 +383,4 @@ RSpec.describe 'Bookmarks' do
     end
   end
 end
+# rubocop:enable RSpec/ExampleLength, RSpec/MultipleExpectations
