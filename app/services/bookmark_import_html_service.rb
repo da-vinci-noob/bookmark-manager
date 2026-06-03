@@ -14,36 +14,13 @@ class BookmarkImportHtmlService
 
   def call
     html = read_html
-    raise ImportError, 'Invalid bookmark HTML format' unless html.match?(/<dl/i)
+    validate_html!(html)
 
-    existing_urls = @user.bookmarks.pluck(:url).map { |url| dedupe_key(url) }.to_set
-    stats = { imported: 0, duplicates: 0, invalid: 0, total: 0 }
+    stats = initial_stats
+    existing_urls = existing_urls_for_user
 
     parse_entries(html).each do |entry|
-      stats[:total] += 1
-      raw_url = normalize_url(entry[:url])
-      url_key = dedupe_key(raw_url)
-
-      if raw_url.blank? || url_key.blank? || existing_urls.include?(url_key)
-        stats[:duplicates] += 1 if existing_urls.include?(url_key)
-        stats[:invalid] += 1 if raw_url.blank? || url_key.blank?
-        next
-      end
-
-      bookmark = @user.bookmarks.build(
-        url: raw_url,
-        title: normalize_title(entry[:title], raw_url),
-        description: entry[:description]
-      )
-
-      unless bookmark.save
-        stats[:invalid] += 1
-        next
-      end
-
-      attach_tags(bookmark, entry[:folders])
-      existing_urls << url_key
-      stats[:imported] += 1
+      process_entry(entry, existing_urls, stats)
     end
 
     stats
@@ -59,6 +36,48 @@ class BookmarkImportHtmlService
     raw
   end
 
+  def validate_html!(html)
+    raise ImportError, 'Invalid bookmark HTML format' unless html.match?(/<dl/i)
+  end
+
+  def initial_stats
+    { imported: 0, duplicates: 0, invalid: 0, total: 0 }
+  end
+
+  def existing_urls_for_user
+    @user.bookmarks.pluck(:url).map { |url| dedupe_key(url) }.to_set
+  end
+
+  def process_entry(entry, existing_urls, stats)
+    stats[:total] += 1
+    raw_url = normalize_url(entry[:url])
+    url_key = dedupe_key(raw_url)
+
+    if raw_url.blank? || url_key.blank? || existing_urls.include?(url_key)
+      stats[:duplicates] += 1 if existing_urls.include?(url_key)
+      stats[:invalid] += 1 if raw_url.blank? || url_key.blank?
+      return
+    end
+
+    bookmark = build_bookmark(entry, raw_url)
+    unless bookmark.save
+      stats[:invalid] += 1
+      return
+    end
+
+    attach_tags(bookmark, entry[:folders])
+    existing_urls << url_key
+    stats[:imported] += 1
+  end
+
+  def build_bookmark(entry, raw_url)
+    @user.bookmarks.build(
+      url: raw_url,
+      title: normalize_title(entry[:title], raw_url),
+      description: entry[:description]
+    )
+  end
+
   def parse_entries(html)
     entries = []
     stack = []
@@ -66,45 +85,76 @@ class BookmarkImportHtmlService
     last_entry = nil
 
     html.each_line do |line|
-      stripped = line.strip
-      next if stripped.empty?
-
-      fragment = Nokogiri::HTML.fragment(stripped)
-
-      heading = fragment.at_css('h3')
-      if heading
-        pending_folder = sanitize_folder_name(heading.text)
-        next
-      end
-
-      if stripped.match?(/<dl\b/i)
-        stack << pending_folder if pending_folder.present?
-        pending_folder = nil
-        next
-      end
-
-      if stripped.match?(%r{</dl>}i)
-        stack.pop if stack.any?
-        next
-      end
-
-      anchor = fragment.at_css('a[href]')
-      if anchor
-        last_entry = {
-          url:         anchor['href'],
-          title:       anchor.text.to_s.strip,
-          description: nil,
-          folders:     stack.dup
-        }
-        entries << last_entry
-        next
-      end
-
-      description = fragment.at_css('dd')
-      last_entry[:description] = description.text.to_s.strip.presence if description && last_entry
+      last_entry, pending_folder, stack = process_line(line, entries, last_entry, pending_folder, stack)
     end
 
     entries
+  end
+
+  def process_line(line, entries, last_entry, pending_folder, stack)
+    stripped = line.strip
+    return [last_entry, pending_folder, stack] if stripped.empty?
+
+    fragment = Nokogiri::HTML.fragment(stripped)
+
+    heading = fragment.at_css('h3')
+    return [last_entry, sanitize_folder_name(heading.text), stack] if heading
+
+    if open_folder?(stripped)
+      return [last_entry, nil, stack_with_pending_folder(stack, pending_folder)]
+    end
+
+    if close_folder?(stripped)
+      return [last_entry, pending_folder, pop_folder(stack)]
+    end
+
+    return handle_anchor_fragment(fragment, entries, stack, pending_folder) if fragment.at_css('a[href]')
+
+    [apply_description(fragment, last_entry), pending_folder, stack]
+  end
+
+  def open_folder?(stripped)
+    stripped.match?(/<dl\b/i)
+  end
+
+  def close_folder?(stripped)
+    stripped.match?(%r{</dl>}i)
+  end
+
+  def stack_with_pending_folder(stack, pending_folder)
+    return stack unless pending_folder.present?
+
+    stack + [pending_folder]
+  end
+
+  def pop_folder(stack)
+    stack.any? ? stack[0...-1] : stack
+  end
+
+  def handle_anchor_fragment(fragment, entries, stack, pending_folder)
+    anchor = fragment.at_css('a[href]')
+    entry = build_entry(anchor, stack)
+    entries << entry
+    [entry, pending_folder, stack]
+  end
+
+  def build_entry(anchor, stack)
+    {
+      url:         anchor['href'],
+      title:       anchor.text.to_s.strip,
+      description: nil,
+      folders:     stack.dup
+    }
+  end
+
+  def apply_description(fragment, last_entry)
+    return last_entry unless last_entry
+
+    description = fragment.at_css('dd')
+    return last_entry unless description
+
+    last_entry[:description] = description.text.to_s.strip.presence
+    last_entry
   end
 
   def attach_tags(bookmark, folders)
