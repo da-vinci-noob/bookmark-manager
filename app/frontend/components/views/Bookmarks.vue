@@ -66,6 +66,14 @@
               >
                 Show Untagged
               </button>
+              <button
+                @click="showStarredOnly"
+                class="w-full p-2 text-left rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 flex justify-between"
+                :class="{ 'bg-gray-100 dark:bg-gray-700': isShowingStarred }"
+              >
+                <span>Show Starred</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ starredBookmarksCount }}</span>
+              </button>
               <div class="flex justify-between items-center mb-3">
                 <button
                   @click="clearTagFilters"
@@ -260,6 +268,14 @@
                       </div>
                       <div class="flex items-center space-x-2">
                         <button
+                          @click="toggleStarred(bookmark)"
+                          class="text-gray-400 hover:text-yellow-500 dark:text-gray-500 dark:hover:text-yellow-400"
+                          :title="bookmark.starred ? 'Remove from favorites' : 'Add to favorites'"
+                        >
+                          <StarSolidIcon v-if="bookmark.starred" class="h-4 w-4 text-yellow-500" />
+                          <StarOutlineIcon v-else class="h-4 w-4" />
+                        </button>
+                        <button
                           @click="openEditModal(bookmark)"
                           class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
                         >
@@ -320,6 +336,14 @@
                         </a>
                       </p>
                       <div class="flex space-x-1 ml-2">
+                        <button
+                          @click="toggleStarred(bookmark)"
+                          class="text-gray-400 dark:text-gray-500 hover:text-yellow-500 dark:hover:text-yellow-400 transition-colors"
+                          :title="bookmark.starred ? 'Remove from favorites' : 'Add to favorites'"
+                        >
+                          <StarSolidIcon v-if="bookmark.starred" class="h-4 w-4 text-yellow-500" />
+                          <StarOutlineIcon v-else class="h-4 w-4" />
+                        </button>
                         <button
                           @click="openEditModal(bookmark)"
                           class="text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 transition-colors"
@@ -494,6 +518,17 @@
                           </div>
                         </div>
                       </div>
+                      <div class="flex items-center">
+                        <input
+                          id="bookmark-starred"
+                          v-model="currentBookmark.starred"
+                          type="checkbox"
+                          class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-yellow-500 focus:ring-yellow-500"
+                        />
+                        <label for="bookmark-starred" class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                          Add to favorites
+                        </label>
+                      </div>
                       <p v-if="errorMessage" class="text-red-600 text-sm mt-2">{{ errorMessage }}</p>
                       <div class="mt-6 flex justify-end space-x-3">
                         <button
@@ -533,8 +568,10 @@ import {
   Squares2X2Icon as ViewGridIcon,
   ListBulletIcon as ViewListIcon,
   ChevronDownIcon,
-  CalendarIcon
+  CalendarIcon,
+  StarIcon as StarOutlineIcon
 } from '@heroicons/vue/24/outline'
+import { StarIcon as StarSolidIcon } from '@heroicons/vue/24/solid'
 import MobileNav from '../shared/MobileNav.vue'
 import ThemeToggle from '../shared/ThemeToggle.vue'
 
@@ -550,6 +587,7 @@ interface Bookmark {
   title: string
   description?: string
   thumbnail_url?: string
+  starred?: boolean
   tags?: Tag[]
   tag_ids?: number[]
   created_at: string
@@ -569,11 +607,13 @@ const currentBookmark = ref<Bookmark>({
   title: '',
   description: '',
   thumbnail_url: '',
+  starred: false,
   tag_ids: [],
   created_at: new Date().toISOString()
 })
 const availableTags = ref<any[]>([])
 const isShowingUntagged = ref(false)
+const isShowingStarred = ref(false)
 const currentSort = ref({
   field: 'date',
   direction: 'asc'
@@ -588,6 +628,10 @@ const importFileInput = ref<HTMLInputElement | null>(null)
 
 const filteredBookmarks = computed(() => {
   let result = [...bookmarks.value]
+
+  if (isShowingStarred.value) {
+    result = result.filter((bookmark) => bookmark.starred)
+  }
 
   if (isShowingUntagged.value) {
     result = result.filter((bookmark) => !bookmark.tags || bookmark.tags.length === 0)
@@ -616,6 +660,7 @@ const displayedBookmarks = computed(() => {
 })
 
 const totalBookmarks = computed(() => totalCount.value)
+const starredBookmarksCount = computed(() => bookmarks.value.filter((bookmark) => bookmark.starred).length)
 
 const getBookmarkCountByTag = (tagId: number) => {
   if (!Array.isArray(bookmarks.value)) return 0
@@ -643,6 +688,7 @@ const closeModal = () => {
     title: '',
     description: '',
     thumbnail_url: '',
+    starred: false,
     tag_ids: [],
     created_at: new Date().toISOString()
   }
@@ -660,6 +706,7 @@ const submitBookmark = async () => {
         title: currentBookmark.value.title,
         description: currentBookmark.value.description,
         thumbnail_url: currentBookmark.value.thumbnail_url,
+        starred: currentBookmark.value.starred,
         tag_ids: currentBookmark.value.tag_ids
       }
     }
@@ -702,6 +749,40 @@ const submitBookmark = async () => {
     closeModal()
   } catch (err) {
     errorMessage.value = err.message || 'An error occurred while saving the bookmark'
+  }
+}
+
+const toggleStarred = async (bookmark: Bookmark) => {
+  try {
+    errorMessage.value = ''
+    successMessage.value = ''
+    const nextStarred = !bookmark.starred
+
+    const response = await fetch(`/bookmarks/${bookmark.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content
+      },
+      body: JSON.stringify({
+        bookmark: {
+          starred: nextStarred
+        }
+      })
+    })
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || 'Failed to update favorite')
+    }
+
+    const savedBookmark = await response.json()
+    const index = bookmarks.value.findIndex((b) => b.id === savedBookmark.id)
+    if (index !== -1) {
+      bookmarks.value[index] = savedBookmark
+    }
+  } catch (err) {
+    errorMessage.value = err instanceof Error ? err.message : 'An error occurred while updating the bookmark'
   }
 }
 
@@ -760,11 +841,16 @@ const toggleTagFilter = (tagId: number) => {
 const clearTagFilters = () => {
   selectedTags.value = []
   isShowingUntagged.value = false
+  isShowingStarred.value = false
 }
 
 const showUntaggedOnly = () => {
   selectedTags.value = []
   isShowingUntagged.value = !isShowingUntagged.value
+}
+
+const showStarredOnly = () => {
+  isShowingStarred.value = !isShowingStarred.value
 }
 
 const sortBookmarks = (sortBy: string) => {

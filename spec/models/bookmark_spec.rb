@@ -16,6 +16,10 @@ RSpec.describe Bookmark do
 
     it { is_expected.to validate_presence_of(:url) }
     it { is_expected.to validate_presence_of(:title) }
+
+    it 'defaults to not starred' do
+      expect(described_class.new.starred).to be(false)
+    end
   end
 
   describe 'url format validation' do

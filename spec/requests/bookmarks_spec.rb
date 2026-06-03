@@ -42,6 +42,7 @@ RSpec.describe 'Bookmarks' do
           url:         'https://example.com',
           title:       'Example Website',
           description: 'An example website',
+          starred:     true,
           tag_ids:     [tag.id]
         }
       }
@@ -59,7 +60,7 @@ RSpec.describe 'Bookmarks' do
         post bookmarks_path, params: valid_attributes, headers: headers
         expect(response).to have_http_status(:created)
 
-        json_response = response.parsed_body.values_at('url', 'title', 'description', 'tags')
+        json_response = response.parsed_body.values_at('url', 'title', 'description', 'starred', 'tags')
         expected_response = valid_attributes[:bookmark].except(:tag_ids).values
         expect(json_response).to eq(expected_response << [JSON.parse(tag.to_json)])
       end
@@ -118,6 +119,12 @@ RSpec.describe 'Bookmarks' do
         expect(bookmark.tags).to include(tag)
       end
 
+      it 'updates starred status' do
+        put bookmark_path(bookmark), params: { bookmark: { starred: true } }, headers: headers
+        bookmark.reload
+
+        expect(bookmark).to be_starred
+      end
     end
 
     context 'when updating URL' do

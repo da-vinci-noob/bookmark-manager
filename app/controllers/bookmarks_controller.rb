@@ -148,6 +148,6 @@ class BookmarksController < ApplicationController
   end
 
   def bookmark_params
-    params.expect(bookmark: [:url, :title, :description, :thumbnail_url, { tag_ids: [] }])
+    params.expect(bookmark: [:url, :title, :description, :thumbnail_url, :starred, { tag_ids: [] }])
   end
 end
